@@ -8,12 +8,13 @@ import re
 
 max_n = 17
 max_k = 3
+chunksize = 128
 mode = "i"
-throughput_filename = "throughput"
-heatmap_filename = "heatmap"
+throughput_filename = "throughput.log"
+heatmap_filename = "heatmap.png"
 
 def run_benchmark(n, k):
-    os.system("../run_benchmark.sh -n " + str(n) + " -k " + str(k) + " -m " + mode + " -f " + throughput_filename)
+    os.system("../run_benchmark.sh -n " + str(n) + " -k " + str(k) + " -c " + str(chunksize) + " -m " + mode + " -f " + throughput_filename)
 
 def create_array():
     array = [[np.nan for n in range(max_n + 1)] for k in range(max_k + 1)]
@@ -61,21 +62,21 @@ def generate_heatmap(data):
 def parse_args():
     global max_n
     global max_k
+    global chunksize
     global mode
-    global throughput_filename
     global heatmap_filename
     parser = argparse.ArgumentParser()
     parser.add_argument("-n", help="Number of data shards", default=max_n, type=int)
     parser.add_argument("-k", help="Number of parity shards", default=max_k, type=int)
+    parser.add_argument("-c", help="Chunksize in KB", default=chunksize, type=int)
     parser.add_argument("-m", help="EC mode (i for ISA-L, j for JavaReedSolomon)", default=mode, type=str)
-    parser.add_argument("-b", help="Output filename for throughput benchmark", default=throughput_filename, type=str)
     parser.add_argument("-o", help="Output filename for heatmap", default=heatmap_filename, type=str)
     args = parser.parse_args()
     max_n = args.n
     max_k = args.k
+    chunksize = args.c
     mode = args.m
-    throughput_filename = args.b + ".log"
-    heatmap_filename = args.o + ".png"
+    heatmap_filename = args.o
 
 def main():
     parse_args()
@@ -83,6 +84,7 @@ def main():
     generate_data(data)
     os.system("cd ..")
     generate_heatmap(data)
+    plt.savefig("../" + heatmap_filename)
     plt.show()
 
 if __name__ == "__main__":
