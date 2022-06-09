@@ -3,4 +3,4 @@
 	url = https://github.com/rajrana22/JavaReedSolomon
 [submodule "isa-l"]
 	path = isa-l
-	url = https://github.com/mengwanguc/isa-l
+	url = https://github.com/rajrana22/isa-l/tree/ReedSolomon

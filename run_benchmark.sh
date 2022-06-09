@@ -1,24 +1,21 @@
 arguments=""
 
-while getopts n:k:f:m: flag
+while getopts n:k:m:f: flag
 do
     case "${flag}" in
-        n) arguments=$arguments${OPTARG};;
-        k) arguments=$arguments" "${OPTARG};;
-        f) filename=${OPTARG};;
+        n) data=${OPTARG};;
+        k) parity=${OPTARG};;
         m) mode=${OPTARG};;
+        f) filename=${OPTARG};;
 
     esac
 done
 
-if ["$mode" == "i"]
+arguments=$arguments$data" "$parity
+
+if [ "$mode" == "i" ]
 then
-    # Run 
+    ./erasure_code/erasure_code_perf_from_file $data $parity 128 > $filename
 else
-    if [ "$arguments" == "" ]
-    then
-        ./gradlew run > $filename
-    else
-        ./gradlew run --args="$arguments" > $filename
-    fi
+    ./gradlew run --args="$arguments" > $filename
 fi
