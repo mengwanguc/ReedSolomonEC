@@ -1,28 +1,35 @@
 import os
+import sys
 import argparse
-import numpy as np
-import seaborn as sns; sns.set_theme()
-import matplotlib.pylab as plt
-from matplotlib.colors import LinearSegmentedColormap
 import re
+import time
+import numpy as np
+import matplotlib.pyplot as plt
+from os.path import exists
 
-# net = network.
-# loc = local.
-# n = data shards.
-# k = parity shards.
-max_net_n = 2
-max_net_k = 1
-max_loc_n = 4
-max_loc_k = 2
 chunksize = 128
-mode = "i"
+mode = "j"
 throughput_filename = "throughput.log"
-heatmap_filename = "heatmap.png"
+input_file = "input.log"
+plot_name = "scatterplot.png"
 
-def run_benchmark(net_n, net_k, loc_n, loc_k):
-    os.system(f"../run_benchmark.sh -net_n {net_n} -net_k {net_k} -loc_n {loc_n} -loc_k {loc_k} -c {chunksize} -m {mode} -f {throughput_filename}")
+def run_benchmark(data, parity):
+    assert len(data) == len(parity)
+    if len(data) == 2:
+        net_n = data[0]
+        loc_n = data[1]
+        net_k = parity[0]
+        loc_k = parity[1]
+        os.system(f"../run_benchmark.sh -a {net_n} -b {net_k} -n {loc_n} -k {loc_k} -c {chunksize} -m {mode} -f {throughput_filename} -e m")
+    elif len(data) == 1:
+        loc_n = data[0]
+        loc_k = parity[0]
+        os.system(f"../run_benchmark.sh -n {loc_n} -k {loc_k} -c {chunksize} -m {mode} -f {throughput_filename} -e s")
+    else:
+        print("ERROR: Incorrect data/parity shard types\n")
+        exit()
 
-def generate_single_point(n, k, data):
+def point_throughput(data, parity):
     with open(throughput_filename) as f:
         lines = f.readlines()
     for key, line in enumerate(lines):
@@ -33,63 +40,95 @@ def generate_single_point(n, k, data):
         if ((mode == "j") and ("Summary:" in line)):
             desired_line = lines[key + 2]
     throughput = float(re.sub("[^0-9.]", "", desired_line))
-    data[k+1][n+1] = throughput
+    return throughput
 
-def generate_data(data):
+def generate_data():
+    s_dur = []
+    s_through = []
+    s_lab = []
+    m_dur = []
+    m_through = []
+    m_lab = []
+
+    with open(input_file) as ifile:
+        lines = ifile.readlines()
+
     if (mode == "i"):
         os.chdir("isa-l")
-    else:
+    elif (mode == "j"):
         os.chdir("JavaReedSolomon")
-
-    for n in range(max_n):
-        for k in range(max_k):
-            print(f"Generating Data for: {n+1}+{k+1}\n")
-            run_benchmark(n+1, k+1)
-            generate_single_point(n, k, data)
+    else:
+        print("ERROR: Incorrect mode\n")
+        exit()
+        
+    for line in lines:
+        start_time = time.time()
+        line = line.split()
+        if len(line) == 5:
+            net_n, net_k, loc_n, loc_k, durability = line
+            data = [net_n, loc_n]
+            parity = [net_k, loc_k]
+            print(f"Generating Data for: ({net_n}+{net_k})({loc_n}+{loc_k})\n")
+            run_benchmark(data, parity)
+            throughput = point_throughput(data, parity)
             os.remove(throughput_filename)
+            m_dur.append(float(durability))
+            m_through.append(throughput)
+            m_string = f"({net_n}+{net_k})({loc_n}+{loc_k})"
+            m_lab.append(m_string)
+        elif len(line) == 3:
+            n, k, durability = line
+            data = [n]
+            parity = [k]
+            print(f"Generating Data for: ({n}+{k})\n")
+            run_benchmark(data, parity)
+            throughput = point_throughput(data, parity)
+            os.remove(throughput_filename)
+            s_dur.append(float(durability))
+            s_through.append(throughput)
+            s_string = f"({n}+{k})"
+            s_lab.append(s_string)
+        else:
+            print("ERROR: Incomplete/Incorrect data in input file\n")
+            exit()
+        print("--- %s seconds elapsed in calculation ---\n" % (time.time() - start_time))
 
-def generate_scatterplot(data):
-    ...
+    assert len(s_dur) == len(s_through) == len(s_lab)
+    assert len(m_dur) == len(m_through) == len(m_lab)
+
+    return s_dur, s_through, s_lab, m_dur, m_through, m_lab
+
+def generate_scatterplot(s_dur, s_through, s_lab, m_dur, m_through, m_lab):
+    plt.scatter(s_dur, s_through, c ="red", marker="s")
+    for i, txt in enumerate(s_lab):
+        plt.annotate(txt, (s_dur[i], s_through[i]), xytext=(s_dur[i] + 0.25, s_through[i] + 7.5))
+    plt.scatter(m_dur, m_through, c ="blue", marker="o")
+    for i, txt in enumerate(m_lab):
+        plt.annotate(txt, (m_dur[i], m_through[i]), xytext=(m_dur[i] + 0.25, m_through[i] + 7.5))
+    plt.xlabel("Durability (nines)")
+    plt.ylabel("Throughput (MB/s)")
 
 def parse_args():
-    max_net_n = args.nd
-    max_net_k = args.np
-    max_loc_n = args.ld
-    max_loc_k = args.lp
-    throughput_filename = args.b + ".log"
-    plot_filename = args.o + ".png"
-
-def parse_args():
-    global max_net_n
-    global max_net_k
-    global max_loc_n
-    global max_loc_k
     global chunksize
     global mode
-    global heatmap_filename
+    global input_file
+    global plot_name
     parser = argparse.ArgumentParser()
-    parser.add_argument("-net_n", help="Number of network data shards", default=max_net_n, type=int)
-    parser.add_argument("-net_k", help="Number of network parity shards", default=max_net_k, type=int)
-    parser.add_argument("-loc_n", help="Number of local data shards", default=max_loc_n, type=int)
-    parser.add_argument("-loc_k", help="Number of local parity shards", default=max_loc_k, type=int)
     parser.add_argument("-c", help="Chunksize in KB", default=chunksize, type=int)
     parser.add_argument("-m", help="EC mode (i for ISA-L, j for JavaReedSolomon)", default=mode, type=str)
-    parser.add_argument("-o", help="Output filename for heatmap", default=heatmap_filename, type=str)
+    parser.add_argument("-i", help="Input log file name.", default=input_file, type=str)
+    parser.add_argument("-o", help="Output image file name.", default=plot_name, type=str)
     args = parser.parse_args()
-    max_net_n = args.net_n
-    max_net_k = args.net_k
-    max_loc_n = args.loc_n
-    max_loc_k = args.loc_k
     chunksize = args.c
     mode = args.m
-    heatmap_filename = args.o
+    input_file = args.i
+    plot_name = args.o
 
 def main():
     parse_args()
-    data = generate_data()
-    os.system("cd ..")
-    generate_scatterplot(data)
-    plt.savefig("../" + heatmap_filename)
+    s_dur, s_through, s_lab, m_dur, m_through, m_lab = generate_data()
+    generate_scatterplot(s_dur, s_through, s_lab, m_dur, m_through, m_lab)
+    plt.savefig(f"../{plot_name}")
     plt.show()
 
 if __name__ == "__main__":
