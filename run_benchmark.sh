@@ -22,7 +22,7 @@ then
         ./erasure_code/erasure_code_perf_from_file $loc_data $loc_parity $chunksize > $filename
 
     else
-        ./erasure_code/erasure_code_perf_mlec $net_data $net_parity $chunksize $loc_data $loc_parity > $filename
+        ./erasure_code/erasure_code_perf_mlec_split $net_data $net_parity $chunksize $loc_data $loc_parity > $filename
     fi
 else
     if [ "$ec" == "s" ]
