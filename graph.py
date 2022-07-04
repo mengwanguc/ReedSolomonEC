@@ -8,12 +8,11 @@ import matplotlib.pyplot as plt
 from os.path import exists
 
 chunksize = 128
-mode = "j"
 throughput_filename = "throughput.log"
 input_file = "input.log"
 plot_name = "scatterplot.png"
 
-def run_benchmark(data, parity):
+def run_benchmark(data, parity, mode):
     assert len(data) == len(parity)
     if len(data) == 2:
         net_n = data[0]
@@ -29,7 +28,7 @@ def run_benchmark(data, parity):
         print("ERROR: Incorrect data/parity shard types\n")
         exit()
 
-def point_throughput(data, parity):
+def point_throughput(mode):
     with open(throughput_filename) as f:
         lines = f.readlines()
     for key, line in enumerate(lines):
@@ -42,13 +41,11 @@ def point_throughput(data, parity):
     throughput = float(re.sub("[^0-9.]", "", desired_line))
     return throughput
 
-def generate_data():
+def generate_data(mode):
     s_dur = []
     s_through = []
-    s_lab = []
     m_dur = []
     m_through = []
-    m_lab = []
 
     with open(input_file) as ifile:
         lines = ifile.readlines()
@@ -69,65 +66,66 @@ def generate_data():
             data = [net_n, loc_n]
             parity = [net_k, loc_k]
             print(f"Generating Data for: ({net_n}+{net_k})({loc_n}+{loc_k})\n")
-            run_benchmark(data, parity)
-            throughput = point_throughput(data, parity)
+            run_benchmark(data, parity, mode)
+            throughput = point_throughput(mode)
             os.remove(throughput_filename)
             m_dur.append(float(durability))
             m_through.append(throughput)
-            m_string = f"({net_n}+{net_k})({loc_n}+{loc_k})"
-            m_lab.append(m_string)
         elif len(line) == 3:
             n, k, durability = line
             data = [n]
             parity = [k]
             print(f"Generating Data for: ({n}+{k})\n")
-            run_benchmark(data, parity)
-            throughput = point_throughput(data, parity)
+            run_benchmark(data, parity, mode)
+            throughput = point_throughput(mode)
             os.remove(throughput_filename)
             s_dur.append(float(durability))
             s_through.append(throughput)
-            s_string = f"({n}+{k})"
-            s_lab.append(s_string)
         else:
             print("ERROR: Incomplete/Incorrect data in input file\n")
             exit()
         print("--- %s seconds elapsed in calculation ---\n" % (time.time() - start_time))
+    os.chdir("..")
 
-    assert len(s_dur) == len(s_through) == len(s_lab)
-    assert len(m_dur) == len(m_through) == len(m_lab)
+    assert len(s_dur) == len(s_through)
+    assert len(m_dur) == len(m_through)
 
-    return s_dur, s_through, s_lab, m_dur, m_through, m_lab
+    single = (s_dur, s_through)
+    multi = (m_dur, m_through)
 
-def generate_scatterplot(s_dur, s_through, s_lab, m_dur, m_through, m_lab):
-    plt.scatter(s_dur, s_through, c ="red", marker="s")
-    for i, txt in enumerate(s_lab):
-        plt.annotate(txt, (s_dur[i], s_through[i]), xytext=(s_dur[i] + 0.25, s_through[i] + 7.5))
-    plt.scatter(m_dur, m_through, c ="blue", marker="o")
-    for i, txt in enumerate(m_lab):
-        plt.annotate(txt, (m_dur[i], m_through[i]), xytext=(m_dur[i] + 0.25, m_through[i] + 7.5))
+    return single, multi
+
+def generate_scatterplot(isa_s, isa_m, java_s, java_m):
+    isa_s_dur, isa_s_through = isa_s
+    isa_m_dur, isa_m_through = isa_m
+    java_s_dur, java_s_through = java_s
+    java_m_dur, java_m_through = java_m
+    plt.plot(isa_s_dur, isa_s_through, c ="red", label="ISA-L single-level")
+    plt.plot(isa_m_dur, isa_m_through, c ="blue", label="ISA-L multi-level")
+    plt.plot(java_s_dur, java_s_through, c ="orange", label="JavaRS single-level")
+    plt.plot(java_m_dur, java_m_through, c ="green", label="JavaRS multi-level")
     plt.xlabel("Durability (nines)")
     plt.ylabel("Throughput (MB/s)")
+    plt.legend(loc='upper right')
 
 def parse_args():
     global chunksize
-    global mode
     global input_file
     global plot_name
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", help="Chunksize in KB", default=chunksize, type=int)
-    parser.add_argument("-m", help="EC mode (i for ISA-L, j for JavaReedSolomon)", default=mode, type=str)
     parser.add_argument("-i", help="Input log file name.", default=input_file, type=str)
     parser.add_argument("-o", help="Output image file name.", default=plot_name, type=str)
     args = parser.parse_args()
     chunksize = args.c
-    mode = args.m
     input_file = args.i
     plot_name = args.o
 
 def main():
     parse_args()
-    s_dur, s_through, s_lab, m_dur, m_through, m_lab = generate_data()
-    generate_scatterplot(s_dur, s_through, s_lab, m_dur, m_through, m_lab)
+    isa_s, isa_m = generate_data("i")
+    java_s, java_m = generate_data("j")
+    generate_scatterplot(isa_s, isa_m, java_s, java_m)
     plt.savefig(f"../{plot_name}")
     plt.show()
 

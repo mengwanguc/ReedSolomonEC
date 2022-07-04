@@ -15,22 +15,26 @@ do
     esac
 done
 
-if [ "$mode" == "i" ]
-then
-    if [ "$ec" == "s" ]
-    then
+if [ "$mode" == "i" ] then
+    if [ "$ec" == "s" ] then
         ./erasure_code/erasure_code_perf_from_file $loc_data $loc_parity $chunksize > $filename
 
     else
-        ./erasure_code/erasure_code_perf_mlec $net_data $net_parity $chunksize $loc_data $loc_parity > $filename
+        ./erasure_code/erasure_code_perf_mlec_split $net_data $net_parity $chunksize $loc_data $loc_parity > $filename
     fi
-else
-    if [ "$ec" == "s" ]
-    then
+elif [ "$mode" == "j" ] then
+    if [ "$ec" == "s" ] then
         arguments=$arguments$loc_data" "$loc_parity" "$chunksize
         ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmark run --args="$arguments" > $filename
-    else
+    elif [ "$ec" == "m" ] then
         arguments=$arguments$net_data" "$net_parity" "$loc_data" "$loc_parity" "$chunksize
         ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkMLEC run --args="$arguments" > $filename
+    elif [ "$ec" == "l" ] then
+        argument=$arguments$net_data" "$net_parity" "$loc_data" "$chunksize
+        ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkLRC run --args="$arguments" > $filename
+    else
+        echo "Error: Invalid EC method specified."
     fi
+else
+    echo "Error: Invalid mode specified."
 fi
