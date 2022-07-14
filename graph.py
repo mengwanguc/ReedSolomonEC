@@ -1,11 +1,8 @@
 import os
-import sys
 import argparse
 import re
 import time
-import numpy as np
 import matplotlib.pyplot as plt
-from os.path import exists
 
 chunksize = 128
 throughput_filename = "throughput.log"
