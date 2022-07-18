@@ -115,8 +115,8 @@ def parse_args():
     parser.add_argument("-o", help="Output image file name.", default=plot_name, type=str)
     args = parser.parse_args()
     chunksize = args.c
-    input_file = args.i
-    plot_name = args.o
+    input_file = "data/" + args.i
+    plot_name = "figures/" + args.o
 
 def main():
     parse_args()

@@ -76,7 +76,7 @@ def parse_args():
     max_k = args.k
     chunksize = args.c
     mode = args.m
-    heatmap_filename = args.o
+    heatmap_filename = "figures/" + args.o
 
 def main():
     parse_args()
