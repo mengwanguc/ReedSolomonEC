@@ -29,7 +29,7 @@ def convertable(k, l, r):
     if (k % l != 0):
         return False
     local_group = k/l
-    if (local_group != r):
+    if (r % local_group != 0):
         return False
     return True
 

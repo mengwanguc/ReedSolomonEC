@@ -3,12 +3,14 @@ import argparse
 import re
 import time
 import matplotlib.pyplot as plt
+from os.path import exists
 
 chunksize = 128
 throughput_filename = "throughput.log"
-lrc_file = "data.log"
+lrc_file = "randomized_data.log"
 plot_name = "compare.png"
-slec_file = "data/" + "slec.log"
+slec_file = "data/" + "compare_slec.csv"
+mlec_file = "data/" + "compare_mlec.csv"
 title = "LRC Throughput vs Comparable SLEC Throughput for Increasing Local Parity"
 
 def run_benchmark(data, ec_type, mode):
@@ -37,16 +39,20 @@ def point_throughput(mode):
     throughput = float(re.sub("[^0-9.]", "", desired_line))
     return throughput
 
-def convert_lrc(k, l, r, p):
-    network = [k, r]
-    local = [int(k / l), p]
-    return network, local
+def convert_lrc(k, l, r, p, ec_type):
+    if ec_type == "s":
+        global_slec = [k, r]
+        local_slec = [int(k / l), p]
+        return global_slec, local_slec
+    elif ec_type == "m":
+        network = [l, int(r / (k / l))]
+        local = [int(k / l), p]
+        return network, local
+    else:
+        print("Error: Incorrect EC conversion type\n")
+        exit()
 
 def generate_data(mode):
-    slec_data = []
-    mlec_data = []
-    configs = []
-
     with open(lrc_file) as ifile:
         lines = ifile.readlines()
 
@@ -64,95 +70,145 @@ def generate_data(mode):
 
         config, _ = line.split("\t")
         _, k, l, r, p, _ = re.split(r'\D+', config)
-        network, local = convert_lrc(int(k), int(l), int(r), int(p))
-        g_n, g_k = network
-        l_n, l_k = local
+
+        global_slec, local_slec = convert_lrc(int(k), int(l), int(r), int(p), ec_type="s")
+        g_n, g_k = global_slec
+        l_n, l_k = local_slec
+        network, local = convert_lrc(int(k), int(l), int(r), int(p), ec_type="m")
+        net_n, net_k = network
+        loc_n, loc_k = local
+
+        # config_exists = False
+        # slec_file_exists = exists("../" + slec_file)
+        # mlec_file_exists = exists("../" + mlec_file)
+        # if slec_file_exists and mlec_file_exists:
+        #     with open("../" + slec_file, "r") as s_file, open("../" + mlec_file, "r") as m_file:
+        #         s_lines = s_file.readlines()
+        #         m_lines = m_file.readlines()
+        #         for s_line, m_line in zip(s_lines, m_lines):
+        #             s = s_line.split(",")
+        #             m = m_line.split(",")
+        #             s_net_check = (s[0] == str(g_n)) and (s[1] == str(g_k))
+        #             s_loc_check = (s[2] == str(l_n)) and (s[3] == str(l_k))
+        #             m_net_check = (m[0] == str(net_n)) and (m[1] == str(net_k))
+        #             m_loc_check = (m[2] == str(loc_n)) and (m[3] == str(loc_k))
+        #             s_check = (s_net_check and s_loc_check)
+        #             m_check = (m_net_check and m_loc_check)
+        #             if (s_check or m_check):
+        #                 if (s_check and m_check):
+        #                     config_exists = True
+        #                     break
+        #                 else:
+        #                     print(f"Error: Configuration inconsistency in files.")
+        #                     exit()
+        # if config_exists:
+        #     print(f"Data for LRC configuration ({k}, {l}, {r}, {p}) already exists\n")
+        #     continue
 
         print(f"Generating data for LRC configuration: ({k}, {l}, {r}, {p})\n")
-        print(f"Comparable network configuration: ({g_n}+{g_k})")
-        print(f"Comparable local configuration: ({l_n}+{l_k})")
+        print(f"Comparable SLEC configuration: ({g_n}+{g_k}),({l_n}+{l_k})")
+        print(f"Comparable MLEC configuration: ({net_n}+{net_k})({loc_n}+{loc_k})")
 
         ### SLEC ###
 
-        run_benchmark(network, "s", mode)
-        a = point_throughput(mode)
-        print(f"SLEC Throughput A: {str(a)}\n")
-        os.remove(throughput_filename)
+        # run_benchmark(network, "s", mode)
+        # a = point_throughput(mode)
+        # print(f"SLEC Throughput A: {str(a)}\n")
+        # os.remove(throughput_filename)
 
-        run_benchmark(local, "s", mode)
-        b = point_throughput(mode)
-        print(f"SLEC Throughput B: {str(b)}\n")
-        os.remove(throughput_filename)
+        # run_benchmark(local, "s", mode)
+        # b = point_throughput(mode)
+        # print(f"SLEC Throughput B: {str(b)}\n")
+        # os.remove(throughput_filename)
 
-        # 1/(1/a + 1/b)
-        slec_throughput = (a * b) / (a + b)
-        print(f"Overall SLEC Throughput: {str(slec_throughput)}\n")
-        slec_data.append(slec_throughput)
+        # # 1/(1/a + 1/b)
+        # slec_throughput = (a * b) / (a + b)
+        # print(f"Overall SLEC Throughput: {str(slec_throughput)}\n")
+
+        # with open("../" + slec_file, "a+") as s_file:
+        #     s_file.seek(0)
+        #     s_firstline = s_file.readline().rstrip()
+        #     s_label = "global data,global parity,local data,local parity,throughput"
+        #     if s_firstline != s_label:
+        #         s_file.write(s_label + "\n")
+        #     s_file.seek(0, 2)
+        #     s_file.write(f"{g_n},{g_k},{l_n},{l_k},{slec_throughput}\n")
 
         ### MLEC ###
 
-        config = [g_n, g_k, l_n, l_k]
+        config = [net_n, net_k, loc_n, loc_k]
         run_benchmark(config, "m", mode)
         mlec_throughput = point_throughput(mode)
         print(f"MLEC Throughput: {str(mlec_throughput)}\n")
         os.remove(throughput_filename)
-        mlec_data.append(mlec_throughput)
-        
-        configs.append((g_n, g_k, l_n, l_k))
+
+        with open("../" + mlec_file, "a+") as m_file:
+            m_file.seek(0)
+            m_firstline = m_file.readline().rstrip()
+            m_label = "network data,network parity,local data,local parity,throughput"
+            if m_firstline != m_label:
+                m_file.write(m_label + "\n")
+            m_file.seek(0, 2)
+            m_file.write(f"{net_n},{net_k},{loc_n},{loc_k},{mlec_throughput}\n")
 
         print("--- %s seconds elapsed in calculation ---\n" % (time.time() - start_time))
 
     os.chdir("..")
-    return slec_data, mlec_data, configs
 
-def generate_configs(lrc_configs, slec_configs):
-    assert len(lrc_configs) == len(slec_configs)
+def generate_configs(configs):
+    lrc_configs, slec_configs, mlec_configs = configs
+    assert len(lrc_configs) == len(slec_configs) == len(mlec_configs)
     configurations = []
-    for lrc_config, slec_config in zip(lrc_configs, slec_configs):
+    for lrc_config, slec_config, mlec_config in zip(lrc_configs, slec_configs, mlec_configs):
         k, l, r, p = lrc_config
-        g_n, g_k, l_n, l_k = slec_config
-        configuration = f"LRC: ({k}, {l}, {r}, {p})\nSLEC: ({g_n}+{g_k}),({l_n}+{l_k})"
+        s_g_n, s_g_k, s_l_n, s_l_k = slec_config
+        m_g_n, m_g_k, m_l_n, m_l_k = mlec_config
+        configuration = f"LRC: ({k}, {l}, {r}, {p})\nSLEC: ({s_g_n}+{s_g_k}),({s_l_n}+{s_l_k})\nMLEC: ({m_g_n}+{m_g_k})({m_l_n}+{m_l_k})"
         configurations.append(configuration)
     return configurations
-
-def write_data(data):
-    with open(slec_file, "a") as f:
-        for datum in data:
-            config, throughput = datum
-            g_n, g_k, l_n, l_k = config
-            f.write(f"({g_n}+{g_k}),({l_n}+{l_k})\t{throughput}\n")
 
 def read_data():
     lrc_data = []
     slec_data = []
+    mlec_data = []
     lrc_configs = []
     slec_configs = []
+    mlec_configs = []
 
-    with open(lrc_file, 'r') as lfile, open(slec_file, 'r') as sfile:
-        lrc_lines = lfile.readlines()
-        slec_lines = sfile.readlines()
+    with open(lrc_file, 'r') as l_file, open(slec_file, 'r') as s_file, open(mlec_file, 'r') as m_file:
+        lrc_lines = l_file.readlines()
+        slec_lines = s_file.readlines()[1:]
+        mlec_lines = m_file.readlines()[1:]
 
-    for lrc_line, slec_line in zip(lrc_lines, slec_lines):
+    for lrc_line, slec_line, mlec_line in zip(lrc_lines, slec_lines, mlec_lines):
 
         lrc_config, lrc_throughput = lrc_line.split("\t")
         lrc_throughput, _ = lrc_throughput.split("\n")
         _, k, l, r, p, _ = re.split(r'\D+', lrc_config)
 
-        slec_config, slec_throughput = slec_line.split("\t")
+        s_g_n, s_g_k, s_l_n, s_l_k, slec_throughput = slec_line.split(",")
         slec_throughput, _ = slec_throughput.split("\n")
-        _, g_n, g_k, l_n, l_k, _ = re.split(r'\D+', slec_config)
+
+        m_g_n, m_g_k, m_l_n, m_l_k, mlec_throughput = mlec_line.split(",")
+        mlec_throughput, _ = mlec_throughput.split("\n")
 
         lrc_data.append(float(lrc_throughput))
         slec_data.append(float(slec_throughput))
+        mlec_data.append(float(mlec_throughput))
         lrc_configs.append((k, l, r, p))
-        slec_configs.append((g_n, g_k, l_n, l_k))
+        slec_configs.append((s_g_n, s_g_k, s_l_n, s_l_k))
+        mlec_configs.append((m_g_n, m_g_k, m_l_n, m_l_k))
 
-    assert len(lrc_data) == len(slec_data) == len(lrc_configs) == len(slec_configs)
-    return lrc_data, slec_data, lrc_configs, slec_configs
+    data_lengths = len(lrc_data) == len(slec_data) == len(mlec_data)
+    config_lengths = len(lrc_configs) == len(slec_configs) == len(mlec_configs)
+    assert (data_lengths and config_lengths)
+    return (lrc_data, slec_data, mlec_data), (lrc_configs, slec_configs, mlec_configs)
 
-def generate_plot(lrc_throughput, slec_throughput, configurations):
-    plt.scatter(configurations, lrc_throughput, c="red", label="LRC", marker="s")
-    plt.scatter(configurations, slec_throughput, c="blue", label="SLEC", marker="o")
+def generate_plot(data, configurations):
+    lrc_data, slec_data, mlec_data = data
+    plt.scatter(configurations, lrc_data, c="green", label="LRC", marker="s")
+    plt.scatter(configurations, slec_data, c="blue", label="SLEC", marker="o")
+    plt.scatter(configurations, mlec_data, c="red", label="MLEC", marker="D")
     plt.ylim(ymin=0)
 
     plt.xlabel("Configuration")
@@ -172,21 +228,17 @@ def parse_args():
     parser.add_argument("-o", help="Output graph file name.", default=plot_name, type=str)
 
     args = parser.parse_args()
-    plot_name = "figure/" + args.o
+    plot_name = "figures/" + args.o
     lrc_file = "data/" + args.i
 
-def collect_data():
-    slec_data = generate_data("j")
-    write_data(slec_data)
-
 def use_data():
-    lrc_data, slec_data, lrc_configs, slec_configs = read_data()
-    configurations = generate_configs(lrc_configs, slec_configs)
-    generate_plot(lrc_data, slec_data, configurations)
+    data, configs = read_data()
+    configurations = generate_configs(configs)
+    generate_plot(data, configurations)
 
 def main():
     parse_args()
-    # collect_data()
+    # generate_data("j")
     use_data()
 
 if __name__ == "__main__":
