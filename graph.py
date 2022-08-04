@@ -29,10 +29,8 @@ def point_throughput(mode):
     with open(throughput_filename) as f:
         lines = f.readlines()
     for key, line in enumerate(lines):
-        if ((mode == "i") and ("runtime" in line)):
-            desired_line = lines[key].split("in")[1].split("sec")[1].lstrip()
-            desired_line = desired_line.split("=")[1].split("MB/s")[0]
-            desired_line = desired_line.lstrip().rstrip()
+        if ((mode == "i") and ("throughput2" in line)):
+            desired_line = lines[key].split("throughput2:")[1].split("MB/s")[0]
         if ((mode == "j") and ("Summary:" in line)):
             desired_line = lines[key + 2]
     throughput = float(re.sub("[^0-9.]", "", desired_line))

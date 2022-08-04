@@ -22,8 +22,14 @@ then
     if [ "$ec" == "s" ]
     then
         ./erasure_code/erasure_code_perf_from_file $loc_data $loc_parity $chunksize > $filename
+    elif [ "$ec" == "m" ]
+    then
+        ./erasure_code/erasure_code_perf_mlec_split $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
+    elif [ "$ec" == "l" ]
+    then
+        ./erasure_code/erasure_code_perf_lrc $loc_parity $local_groups $global_parity $local_parity $chunksize > $filename
     else
-        ./erasure_code/erasure_code_perf_mlec_split $net_data $net_parity $chunksize $loc_data $loc_parity > $filename
+        echo "Error: Invalid EC method specified."
     fi
 elif [ "$mode" == "j" ]
 then

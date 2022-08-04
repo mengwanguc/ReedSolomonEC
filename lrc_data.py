@@ -16,16 +16,14 @@ def point_throughput(mode):
     with open(throughput_filename, "r") as f:
         lines = f.readlines()
     for key, line in enumerate(lines):
-        if ((mode == "i") and ("runtime" in line)):
-            desired_line = lines[key].split("in")[1].split("sec")[1].lstrip()
-            desired_line = desired_line.split("=")[1].split("MB/s")[0]
-            desired_line = desired_line.lstrip().rstrip()
+        if ((mode == "i") and ("throughput2" in line)):
+            desired_line = lines[key].split("throughput2:")[1].split("MB/s")[0]
         if ((mode == "j") and ("Summary:" in line)):
             desired_line = lines[key + 2]
     throughput = float(re.sub("[^0-9.]", "", desired_line))
     return throughput
 
-def convertable(k, l, r):
+def convertible(k, l, r):
     if (k % l != 0):
         return False
     local_group = k/l
@@ -48,7 +46,7 @@ def generate_data(mode):
     for k in range(1, max_k):
         for l in range(1, int(max_k / 2) + 1):
             for r in range(1, max_parity + 1):
-                if not convertable(k, l, r):
+                if not convertible(k, l, r):
                     continue
                     # print("Error: LRC incovertable")
                     # exit()
