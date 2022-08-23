@@ -4,11 +4,12 @@ import re
 import time
 from os.path import exists
 
-max_n = 50
+max_n = 10
 max_k = 6
 chunksize = 128
 throughput_filename = "throughput.log"
-output_path = "slec_total.csv"
+output_path = "data/total_isa-l_slec.csv"
+mode = "i"
 
 def run_benchmark(n, k, mode):
     os.system(f"../run_benchmark.sh -n {n} -k {k} -c {chunksize} -m {mode} -f {throughput_filename} -e s")
@@ -70,16 +71,19 @@ def generate_data(mode):
 def parse_args():
     global chunksize
     global output_file
+    global mode
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", help="Chunksize in KB", default=chunksize, type=int)
     parser.add_argument("-o", help="Output file name.", default=output_path, type=str)
+    parser.add_argument("-m", help="Mode", default=mode, type=str)
     args = parser.parse_args()
     chunksize = args.c
     output_file = "data/" + args.o
+    mode = args.m
 
 def main():
     parse_args()
-    generate_data("j")
+    generate_data(mode)
 
 if __name__ == "__main__":
     main()

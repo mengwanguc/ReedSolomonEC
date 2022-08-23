@@ -4,7 +4,7 @@ import re
 import time
 from os.path import exists
 
-max_k = 12
+max_k = 10
 max_parity = 4
 chunksize = 128
 mode = "j"
@@ -43,7 +43,7 @@ def generate_data(mode):
     else:
         print("ERROR: Incorrect mode\n")
         exit()
-    for k in range(1, max_k):
+    for k in range(1, max_k + 1):
         for l in range(1, int(max_k / 2) + 1):
             for r in range(1, max_parity + 1):
                 if not convertible(k, l, r):
