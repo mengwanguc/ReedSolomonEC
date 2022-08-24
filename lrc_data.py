@@ -9,11 +9,12 @@ max_parity = 4
 chunksize = 128
 mode = "j"
 throughput_filename = "throughput.log"
-javars_output_filename = "data/javars_lrc.csv"
-isa_l_output_filename = "data/isa-l_lrc.csv"
+javars_output_filename = "data/javars_opt_lrc.csv"
+isa_l_output_filename = "data/isa-l_opt_lrc.csv"
+opt = 1 # 0 for LRC, 1 for Optimal LRC
 
-def run_benchmark(k, l, r, p, mode):
-    os.system(f"../run_benchmark.sh -k {k} -l {l} -r {r} -p {p} -c {chunksize} -m {mode} -f {throughput_filename} -e l")
+def run_benchmark(k, l, r, p, mode, opt):
+    os.system(f"../run_benchmark.sh -k {k} -l {l} -r {r} -p {p} -c {chunksize} -m {mode} -f {throughput_filename} -e l -t {opt}")
 
 def point_throughput(mode):
     with open(throughput_filename, "r") as f:
@@ -34,7 +35,7 @@ def convertible(k, l, r):
         return False
     return True
 
-def generate_data(mode):
+def generate_data(mode, opt):
 
     if (mode == "i"):
         os.chdir("isa-l")
@@ -44,7 +45,7 @@ def generate_data(mode):
         print("ERROR: Incorrect mode\n")
         exit()
     for k in range(1, max_k + 1):
-        for l in range(1, int(max_k / 2) + 1):
+        for l in range(1, int(k / 2) + 1):
             for r in range(1, max_parity + 1):
                 if not convertible(k, l, r):
                     continue
@@ -67,7 +68,7 @@ def generate_data(mode):
                         continue
                     start_time = time.time()
                     print(f"Generating Data for: ({k}, {l}, {r}, {p})\n")
-                    run_benchmark(k, l, r, p, mode)
+                    run_benchmark(k, l, r, p, mode, opt)
                     throughput = point_throughput(mode)
                     os.remove(throughput_filename)
                     with open("../" + output_file, "a+") as f:
@@ -85,12 +86,15 @@ def parse_args():
     global chunksize
     global output_file
     global mode
+    global opt
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", help="Chunksize in KB", default=chunksize, type=int)
     parser.add_argument("-m", help="Mode", default=mode, type=str)
+    parser.add_argument("-o", help="Option", default=opt, type=str)
     args = parser.parse_args()
     chunksize = args.c
     mode = args.m
+    opt = args.o
     if mode == "i":
         output_file = isa_l_output_filename
     elif mode == "j":
@@ -101,7 +105,7 @@ def parse_args():
 
 def main():
     parse_args()
-    generate_data(mode)
+    generate_data(mode, opt)
 
 if __name__ == "__main__":
     main()

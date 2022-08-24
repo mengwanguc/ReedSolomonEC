@@ -25,6 +25,7 @@ isa_l_lrc_df = pd.read_csv("data/total_isa-l_lrc.csv")
 javars_lrc_df = pd.read_csv("data/total_javars_lrc.csv")
 isa_l_slec_df = pd.read_csv("data/total_isa-l_slec.csv")
 javars_slec_df = pd.read_csv("data/total_javars_slec.csv")
+isa_l_olrc_df = pd.read_csv("data/isa-l_opt_lrc.csv")
 
 # Instantiate data and configuration arrays
 isa_l_mlec_data = []
@@ -33,12 +34,64 @@ isa_l_lrc_data = []
 javars_lrc_data = []
 isa_l_slec_data = []
 javars_slec_data = []
+isa_l_olrc_data = []
 isa_l_mlec_configs = []
 javars_mlec_configs = []
 isa_l_lrc_configs = []
 javars_lrc_configs = []
 isa_l_slec_configs = []
 javars_slec_configs = []
+isa_l_olrc_configs = []
+
+# Pull desired JavaRS LRC and SLEC data
+for index, row in isa_l_lrc_df.iterrows():
+    throughput = float(row["throughput"])
+    k = int(row["k"])
+    l = int(row["l"])
+    r = int(row["r"])
+    p = int(row["p"])
+    isa_l_lrc_data.append(throughput)
+    isa_l_lrc_configs.append((k, l, r, p))
+
+for index, row in isa_l_olrc_df.iterrows():
+    throughput = float(row["throughput"])
+    k = int(row["k"])
+    l = int(row["l"])
+    r = int(row["r"])
+    p = int(row["p"])
+    isa_l_olrc_data.append(throughput)
+    isa_l_olrc_configs.append((k, l, r, p))
+
+assert (len(isa_l_lrc_data) == len(isa_l_lrc_configs) == len(isa_l_olrc_data) == len(isa_l_olrc_configs))
+
+zipped2 = zip(isa_l_lrc_data, isa_l_olrc_data,
+              isa_l_lrc_configs, isa_l_olrc_configs)
+sorted_pairs2 = sorted(zipped2)
+tuples2 = zip(*sorted_pairs2)
+isa_l_lrc_data, isa_l_olrc_data, isa_l_lrc_configs, isa_l_olrc_configs = [
+    list(tuple) for tuple in tuples2]
+
+configurations = []
+for lrc_config, olrc_config in zip(isa_l_lrc_configs, isa_l_olrc_configs):
+    k, l, r, p = lrc_config
+    o_k, o_l, o_r, o_p = olrc_config
+    configuration = f"LRC: ({k}, {l}, {r}, {p})\nOptimal LRC: ({o_k}, {o_l}, {o_r}, {o_p})"
+    configurations.append(configuration)
+
+plt.scatter(configurations, isa_l_lrc_data,
+            c="blue", label="ISA-L LRC", marker="s")
+plt.scatter(configurations, isa_l_olrc_data,
+            c="green", label="ISA-L Optimal LRC", marker="o")
+plt.ylim(ymin=0)
+
+plt.xlabel("Configuration")
+plt.ylabel("Throughput (MB/s)")
+plt.legend(loc="upper right")
+plt.title("ISA-L LRC vs Optimal LRC for all Configurations")
+
+plt.show()
+
+"""
 
 # Pull desired JavaRS LRC and SLEC data
 for index, row in isa_l_lrc_df.iterrows():
@@ -105,3 +158,5 @@ plt.legend(loc="upper right")
 plt.title("ISA-L LRC vs SLEC for all Configurations")
 
 plt.show()
+
+"""

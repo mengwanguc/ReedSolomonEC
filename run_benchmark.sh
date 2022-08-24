@@ -1,6 +1,6 @@
 arguments=""
 
-while getopts a:b:n:k:c:m:f:e:l:r:p: flag
+while getopts a:b:n:k:c:m:f:e:l:r:p:t: flag
 do
     case "${flag}" in
         a) net_data=${OPTARG};;
@@ -14,6 +14,7 @@ do
         l) local_groups=${OPTARG};;
         r) global_parity=${OPTARG};;
         p) local_parity=${OPTARG};;
+        t) type=${OPTARG};;
     esac
 done
 
@@ -27,7 +28,7 @@ then
         ./erasure_code/erasure_code_perf_mlec_split $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
     elif [ "$ec" == "l" ]
     then
-        ./erasure_code/erasure_code_perf_lrc $loc_parity $local_groups $global_parity $local_parity $chunksize > $filename
+        ./erasure_code/erasure_code_perf_lrc $loc_parity $local_groups $global_parity $local_parity $chunksize $type > $filename
     else
         echo "Error: Invalid EC method specified."
     fi
