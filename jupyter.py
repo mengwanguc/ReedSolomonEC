@@ -43,120 +43,80 @@ isa_l_slec_configs = []
 javars_slec_configs = []
 isa_l_olrc_configs = []
 
-# Pull desired JavaRS LRC and SLEC data
+k_fixed = 4
+l_fixed = 1
+r_fixed = 2
+p_fixed = 2
+
+mlec_index = []
+
+# Pull desired ISA-L LRC data
 for index, row in isa_l_lrc_df.iterrows():
     throughput = float(row["throughput"])
     k = int(row["k"])
     l = int(row["l"])
     r = int(row["r"])
     p = int(row["p"])
-    isa_l_lrc_data.append(throughput)
-    isa_l_lrc_configs.append((k, l, r, p))
+    if (l == l_fixed and r == r_fixed and p == p_fixed):
+        mlec_index.append(index)
+        isa_l_lrc_data.append(throughput)
+        isa_l_lrc_configs.append((k, l, r, p))
+assert (len(isa_l_lrc_data) == len(isa_l_lrc_configs))
 
+# Pull desired ISA-L Optimal LRC data
 for index, row in isa_l_olrc_df.iterrows():
     throughput = float(row["throughput"])
     k = int(row["k"])
     l = int(row["l"])
     r = int(row["r"])
     p = int(row["p"])
-    isa_l_olrc_data.append(throughput)
-    isa_l_olrc_configs.append((k, l, r, p))
+    if (l == l_fixed and r == r_fixed and p == p_fixed):
+        isa_l_olrc_data.append(throughput)
+        isa_l_olrc_configs.append((k, l, r, p))
+assert (len(isa_l_olrc_data) == len(isa_l_olrc_configs))
 
-assert (len(isa_l_lrc_data) == len(isa_l_lrc_configs) == len(isa_l_olrc_data) == len(isa_l_olrc_configs))
+# Pull desired ISA-L MLEC data
+for index, row in isa_l_mlec_df.iterrows():
+    throughput = float(row["throughput"])
+    n_net = int(row["network data"])
+    k_net = int(row["network parity"])
+    n_loc = int(row["local data"])
+    k_loc = int(row["local parity"])
+    if (index in mlec_index):
+        isa_l_mlec_data.append(throughput)
+        isa_l_mlec_configs.append((n_net, k_net, n_loc, k_loc))
+assert (len(isa_l_mlec_data) == len(isa_l_mlec_configs))
 
-zipped2 = zip(isa_l_lrc_data, isa_l_olrc_data,
-              isa_l_lrc_configs, isa_l_olrc_configs)
-sorted_pairs2 = sorted(zipped2)
-tuples2 = zip(*sorted_pairs2)
-isa_l_lrc_data, isa_l_olrc_data, isa_l_lrc_configs, isa_l_olrc_configs = [
-    list(tuple) for tuple in tuples2]
+# zipped = zip(isa_l_lrc_data, isa_l_mlec_data, isa_l_olrc_data,
+#              isa_l_lrc_configs, isa_l_olrc_configs, isa_l_mlec_configs)
+# sorted_pairs = sorted(zipped)
+# tuples = zip(*sorted_pairs)
+# isa_l_lrc_data, isa_l_mlec_data, isa_l_olrc_data, isa_l_lrc_configs, isa_l_olrc_configs, isa_l_mlec_configs = [
+#     list(tuple) for tuple in tuples
+# ]
 
 configurations = []
-for lrc_config, olrc_config in zip(isa_l_lrc_configs, isa_l_olrc_configs):
+for lrc_config, olrc_config, mlec_config in zip(isa_l_lrc_configs, isa_l_olrc_configs, isa_l_mlec_configs):
     k, l, r, p = lrc_config
     o_k, o_l, o_r, o_p = olrc_config
-    configuration = f"LRC: ({k}, {l}, {r}, {p})\nOptimal LRC: ({o_k}, {o_l}, {o_r}, {o_p})"
+    m_g_n, m_g_k, m_l_n, m_l_k = mlec_config
+    config1 = f"Optimal LRC: ({o_k}, {o_l}, {o_r}, {o_p})\n"
+    config2 = f"LRC: ({k}, {l}, {r}, {p})\n"
+    config3 = f"MLEC: ({m_g_n}+{m_g_k})({m_l_n}+{m_l_k})"
+    configuration = config1 + config2 + config3
     configurations.append(configuration)
 
 plt.scatter(configurations, isa_l_lrc_data,
             c="blue", label="ISA-L LRC", marker="s")
 plt.scatter(configurations, isa_l_olrc_data,
-            c="green", label="ISA-L Optimal LRC", marker="o")
+            c="green", label="ISA-L Optimal LRC", marker="s")
+plt.scatter(configurations, isa_l_mlec_data,
+            c="red", label="ISA-L MLEC", marker="D")
 plt.ylim(ymin=0)
 
 plt.xlabel("Configuration")
 plt.ylabel("Throughput (MB/s)")
 plt.legend(loc="upper right")
-plt.title("ISA-L LRC vs Optimal LRC for all Configurations")
+plt.title("ISA-L LRC vs Optimal LRC vs MLEC for all Configurations")
 
 plt.show()
-
-"""
-
-# Pull desired JavaRS LRC and SLEC data
-for index, row in isa_l_lrc_df.iterrows():
-    throughput = float(row["throughput"])
-    k = int(row["k"])
-    l = int(row["l"])
-    r = int(row["r"])
-    p = int(row["p"])
-    isa_l_lrc_data.append(throughput)
-    isa_l_lrc_configs.append((k, l, r, p))
-    network, local = convert_lrc(k, l, r, p, "s")
-    n_net, k_net = network
-    n_loc, k_loc = local
-    a = 0
-    b = 0
-    a_check = 0
-    b_check = 0
-    for i, line in isa_l_slec_df.iterrows():
-        throughput = float(line["throughput"])
-        n = int(line["data"])
-        k = int(line["parity"])
-        if (n == n_net and k == k_net):
-            a = throughput
-            a_check += 1
-        if (n == n_loc and k == k_loc):
-            b = throughput
-            b_check += 1
-        if (a_check + b_check == 2):
-            break
-    if (a_check + b_check != 2):
-        print("ERROR: SLEC configurations not found\n")
-        exit()
-    # 1/(1/a + 1/b)
-    slec_throughput = (a * b) / (a + b)
-    isa_l_slec_data.append(slec_throughput)
-    isa_l_slec_configs.append(({n_net}, {k_net}, {n_loc}, {k_loc}))
-
-assert (len(isa_l_slec_data) == len(isa_l_slec_configs)
-        == len(isa_l_lrc_data) == len(isa_l_lrc_configs))
-
-zipped2 = zip(isa_l_lrc_data, isa_l_slec_data,
-              isa_l_lrc_configs, isa_l_slec_configs)
-sorted_pairs2 = sorted(zipped2)
-tuples2 = zip(*sorted_pairs2)
-isa_l_lrc_data, isa_l_slec_data, isa_l_lrc_configs, isa_l_slec_configs = [
-    list(tuple) for tuple in tuples2]
-
-configurations = []
-for lrc_config, slec_config in zip(isa_l_lrc_configs, isa_l_slec_configs):
-    k, l, r, p = lrc_config
-    net_n, net_k, loc_n, loc_k = slec_config
-    configuration = f"LRC: ({k}, {l}, {r}, {p})\SLEC: ({net_n}+{net_k})({loc_n}+{loc_k})"
-    configurations.append(configuration)
-
-plt.scatter(configurations, isa_l_lrc_data,
-            c="green", label="ISA-L LRC", marker="s")
-plt.scatter(configurations, isa_l_slec_data,
-            c="blue", label="ISA-L SLEC", marker="o")
-plt.ylim(ymin=0)
-
-plt.xlabel("Configuration")
-plt.ylabel("Throughput (MB/s)")
-plt.legend(loc="upper right")
-plt.title("ISA-L LRC vs SLEC for all Configurations")
-
-plt.show()
-
-"""

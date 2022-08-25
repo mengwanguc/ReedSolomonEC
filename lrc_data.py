@@ -4,17 +4,20 @@ import re
 import time
 from os.path import exists
 
-max_k = 10
-max_parity = 4
+max_k = 12
+max_parity = 6
 chunksize = 128
 mode = "j"
 throughput_filename = "throughput.log"
 javars_output_filename = "data/javars_opt_lrc.csv"
 isa_l_output_filename = "data/isa-l_opt_lrc.csv"
-opt = 1 # 0 for LRC, 1 for Optimal LRC
+opt = 1  # 0 for LRC, 1 for Optimal LRC
+
 
 def run_benchmark(k, l, r, p, mode, opt):
-    os.system(f"../run_benchmark.sh -k {k} -l {l} -r {r} -p {p} -c {chunksize} -m {mode} -f {throughput_filename} -e l -t {opt}")
+    os.system(
+        f"../run_benchmark.sh -k {k} -l {l} -r {r} -p {p} -c {chunksize} -m {mode} -f {throughput_filename} -e l -t {opt}")
+
 
 def point_throughput(mode):
     with open(throughput_filename, "r") as f:
@@ -27,6 +30,7 @@ def point_throughput(mode):
     throughput = float(re.sub("[^0-9.]", "", desired_line))
     return throughput
 
+
 def convertible(k, l, r):
     if (k % l != 0):
         return False
@@ -34,6 +38,7 @@ def convertible(k, l, r):
     if (r % local_group != 0):
         return False
     return True
+
 
 def generate_data(mode, opt):
 
@@ -45,7 +50,7 @@ def generate_data(mode, opt):
         print("ERROR: Incorrect mode\n")
         exit()
     for k in range(1, max_k + 1):
-        for l in range(1, int(k / 2) + 1):
+        for l in range(1, max_k + 1):
             for r in range(1, max_parity + 1):
                 if not convertible(k, l, r):
                     continue
@@ -60,11 +65,12 @@ def generate_data(mode, opt):
                             for line in lines:
                                 content = line.split(",")
                                 if (content[0] == str(k) and content[1] == str(l) and
-                                    content[2] == str(r) and content[3] == str(p)):
+                                        content[2] == str(r) and content[3] == str(p)):
                                     config_exists = True
                                     break
                     if config_exists:
-                        print(f"Data for configuration ({k}, {l}, {r}, {p}) already exists\n")
+                        print(
+                            f"Data for configuration ({k}, {l}, {r}, {p}) already exists\n")
                         continue
                     start_time = time.time()
                     print(f"Generating Data for: ({k}, {l}, {r}, {p})\n")
@@ -78,9 +84,12 @@ def generate_data(mode, opt):
                             f.write("k,l,r,p,throughput\n")
                         f.seek(0, 2)
                         f.write(f"{k},{l},{r},{p},{throughput}\n")
-                    print(f"Configuration: ({k}, {l}, {r}, {p})\tThroughput: {throughput}\n")
-                    print("--- %s seconds elapsed in calculation ---\n" % (time.time() - start_time))
+                    print(
+                        f"Configuration: ({k}, {l}, {r}, {p})\tThroughput: {throughput}\n")
+                    print("--- %s seconds elapsed in calculation ---\n" %
+                          (time.time() - start_time))
     os.chdir("..")
+
 
 def parse_args():
     global chunksize
@@ -88,9 +97,10 @@ def parse_args():
     global mode
     global opt
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", help="Chunksize in KB", default=chunksize, type=int)
+    parser.add_argument("-c", help="Chunksize in KB",
+                        default=chunksize, type=int)
     parser.add_argument("-m", help="Mode", default=mode, type=str)
-    parser.add_argument("-o", help="Option", default=opt, type=str)
+    parser.add_argument("-o", help="Option", default=opt, type=int)
     args = parser.parse_args()
     chunksize = args.c
     mode = args.m
@@ -103,9 +113,11 @@ def parse_args():
         print("ERROR: Incorrect mode\n")
         exit()
 
+
 def main():
     parse_args()
     generate_data(mode, opt)
+
 
 if __name__ == "__main__":
     main()
