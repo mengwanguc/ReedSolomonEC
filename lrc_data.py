@@ -5,12 +5,12 @@ import time
 from os.path import exists
 
 max_k = 12
-max_parity = 8
+max_parity = 12
 chunksize = 128
 mode = "j"
 throughput_filename = "throughput.log"
 javars_output_filename = "data/javars_opt_lrc.csv"
-isa_l_output_filename = "data/isa-l_opt_lrc.csv"
+isa_l_output_filename = "data/total_isa-l_lrc.csv"
 opt = 1  # 0 for LRC, 1 for Optimal LRC
 
 
@@ -49,14 +49,14 @@ def generate_data(mode, opt):
     else:
         print("ERROR: Incorrect mode\n")
         exit()
-    for k in range(64, 65):
-        for l in range(8, 9):
-            for r in range(8, 9):
+    for k in range(24, 25):
+        for l in range(12, 13):
+            for r in range(1, max_parity + 1):
                 if not convertible(k, l, r):
                     continue
                     # print("Error: LRC incovertable")
                     # exit()
-                for p in range(1, max_parity + 1):
+                for p in range(1, 2):
                     config_exists = False
                     file_exists = exists("../" + output_file)
                     if file_exists:

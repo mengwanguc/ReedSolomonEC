@@ -71,7 +71,7 @@ def generate_data(mode):
 
         k, l, r, p, _ = line.split(",")
 
-        if (int(k) != 64):
+        if (int(k) != 24):
             continue
 
         global_slec, local_slec = convert_lrc(int(k), int(l), int(r), int(p), ec_type="s")
