@@ -7,12 +7,12 @@ from os.path import exists
 
 chunksize = 128
 throughput_filename = "throughput.log"
-lrc_file = "data/total_isa-l_lrc.csv"
+lrc_file = "total_isa-l_lrc.csv"
 isa_l_lrc_file = "data/total_isa-l_lrc.csv"
 javars_lrc_file = "data/total_javars_lrc.csv"
 isa_l_mlec_file = "data/isa-l_compare_mlec.csv"
 javars_mlec_file = "data/javars_compare_mlec.csv"
-mode = "j"
+mode = "i"
 plot_name = "compare.png"
 title = "LRC Throughput vs Comparable SLEC Throughput"
 
@@ -70,6 +70,9 @@ def generate_data(mode):
         start_time = time.time()
 
         k, l, r, p, _ = line.split(",")
+
+        if (int(k) != 64):
+            continue
 
         global_slec, local_slec = convert_lrc(int(k), int(l), int(r), int(p), ec_type="s")
         g_n, g_k = global_slec
@@ -282,8 +285,8 @@ def use_data():
 
 def main():
     parse_args()
-    # generate_data(mode)
-    use_data()
+    generate_data(mode)
+    # use_data()
 
 if __name__ == "__main__":
     main()

@@ -5,7 +5,7 @@ import time
 from os.path import exists
 
 max_k = 12
-max_parity = 6
+max_parity = 8
 chunksize = 128
 mode = "j"
 throughput_filename = "throughput.log"
@@ -49,9 +49,9 @@ def generate_data(mode, opt):
     else:
         print("ERROR: Incorrect mode\n")
         exit()
-    for k in range(1, max_k + 1):
-        for l in range(1, max_k + 1):
-            for r in range(1, max_parity + 1):
+    for k in range(64, 65):
+        for l in range(8, 9):
+            for r in range(8, 9):
                 if not convertible(k, l, r):
                     continue
                     # print("Error: LRC incovertable")
