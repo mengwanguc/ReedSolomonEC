@@ -4,15 +4,18 @@ import re
 import time
 from os.path import exists
 
-max_n = 10
-max_k = 6
+max_n = 50
+max_k = 10
 chunksize = 128
 throughput_filename = "throughput.log"
 output_path = "data/total_isa-l_slec.csv"
 mode = "i"
 
+
 def run_benchmark(n, k, mode):
-    os.system(f"../run_benchmark.sh -n {n} -k {k} -c {chunksize} -m {mode} -f {throughput_filename} -e s")
+    os.system(
+        f"../run_benchmark.sh -n {n} -k {k} -c {chunksize} -m {mode} -f {throughput_filename} -e s")
+
 
 def point_throughput(mode):
     with open(throughput_filename, "r") as f:
@@ -25,6 +28,7 @@ def point_throughput(mode):
     throughput = float(re.sub("[^0-9.]", "", desired_line))
     return throughput
 
+
 def generate_data(mode):
 
     data = []
@@ -36,7 +40,7 @@ def generate_data(mode):
     else:
         print("ERROR: Incorrect mode\n")
         exit()
-        
+
     for n in range(1, max_n + 1):
         for k in range(1, max_k + 1):
             config_exists = False
@@ -49,9 +53,9 @@ def generate_data(mode):
                         if (content[0] == str(n) and content[1] == str(k)):
                             config_exists = True
                             break
-            if config_exists:
-                print(f"Data for configuration ({n}+{k}) already exists\n")
-                continue
+                if config_exists:
+                    print(f"Data for configuration ({n}+{k}) already exists\n")
+                    continue
             start_time = time.time()
             print(f"Generating Data for ({n}+{k})\n")
             run_benchmark(n, k, mode)
@@ -64,26 +68,32 @@ def generate_data(mode):
                     f.write("data,parity,throughput\n")
                 f.seek(0, 2)
                 f.write(f"{n},{k},{throughput}\n")
-            print("--- %s seconds elapsed in calculation ---\n" % (time.time() - start_time))
+            print("--- %s seconds elapsed in calculation ---\n" %
+                  (time.time() - start_time))
     os.chdir("..")
     return data
+
 
 def parse_args():
     global chunksize
     global output_file
     global mode
     parser = argparse.ArgumentParser()
-    parser.add_argument("-c", help="Chunksize in KB", default=chunksize, type=int)
-    parser.add_argument("-o", help="Output file name.", default=output_path, type=str)
+    parser.add_argument("-c", help="Chunksize in KB",
+                        default=chunksize, type=int)
+    parser.add_argument("-o", help="Output file name.",
+                        default=output_path, type=str)
     parser.add_argument("-m", help="Mode", default=mode, type=str)
     args = parser.parse_args()
     chunksize = args.c
     output_file = "data/" + args.o
     mode = args.m
 
+
 def main():
     parse_args()
     generate_data(mode)
+
 
 if __name__ == "__main__":
     main()

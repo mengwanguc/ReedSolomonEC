@@ -43,10 +43,10 @@ isa_l_slec_configs = []
 javars_slec_configs = []
 isa_l_olrc_configs = []
 
-k_fixed = 4
-l_fixed = 1
-r_fixed = 2
-p_fixed = 2
+k_fixed = 6
+l_fixed = 2
+r_fixed = 3
+p_fixed = 1
 
 mlec_index = []
 
@@ -57,7 +57,7 @@ for index, row in isa_l_lrc_df.iterrows():
     l = int(row["l"])
     r = int(row["r"])
     p = int(row["p"])
-    if (l == l_fixed and r == r_fixed and p == p_fixed):
+    if (l == l_fixed and r == r_fixed and k == k_fixed):
         mlec_index.append(index)
         isa_l_lrc_data.append(throughput)
         isa_l_lrc_configs.append((k, l, r, p))
@@ -70,7 +70,7 @@ for index, row in isa_l_olrc_df.iterrows():
     l = int(row["l"])
     r = int(row["r"])
     p = int(row["p"])
-    if (l == l_fixed and r == r_fixed and p == p_fixed):
+    if (l == l_fixed and r == r_fixed and k == k_fixed):
         isa_l_olrc_data.append(throughput)
         isa_l_olrc_configs.append((k, l, r, p))
 assert (len(isa_l_olrc_data) == len(isa_l_olrc_configs))
@@ -82,7 +82,7 @@ for index, row in isa_l_mlec_df.iterrows():
     k_net = int(row["network parity"])
     n_loc = int(row["local data"])
     k_loc = int(row["local parity"])
-    if (index in mlec_index):
+    if ((n_net == 2) and (k_net == 1) and (n_loc == 3)):
         isa_l_mlec_data.append(throughput)
         isa_l_mlec_configs.append((n_net, k_net, n_loc, k_loc))
 assert (len(isa_l_mlec_data) == len(isa_l_mlec_configs))
@@ -100,7 +100,7 @@ for lrc_config, olrc_config, mlec_config in zip(isa_l_lrc_configs, isa_l_olrc_co
     k, l, r, p = lrc_config
     o_k, o_l, o_r, o_p = olrc_config
     m_g_n, m_g_k, m_l_n, m_l_k = mlec_config
-    config1 = f"Optimal LRC: ({o_k}, {o_l}, {o_r}, {o_p})\n"
+    config1 = f"O-LRC: ({o_k}, {o_l}, {o_r}, {o_p})\n"
     config2 = f"LRC: ({k}, {l}, {r}, {p})\n"
     config3 = f"MLEC: ({m_g_n}+{m_g_k})({m_l_n}+{m_l_k})"
     configuration = config1 + config2 + config3
@@ -117,6 +117,7 @@ plt.ylim(ymin=0)
 plt.xlabel("Configuration")
 plt.ylabel("Throughput (MB/s)")
 plt.legend(loc="upper right")
-plt.title("ISA-L LRC vs Optimal LRC vs MLEC for all Configurations")
+plt.title(
+    "LRC vs Optimal LRC vs MLEC for (6, 2, 3, x) Where Local Parity x Increases")
 
 plt.show()
