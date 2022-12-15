@@ -18,31 +18,31 @@ do
     esac
 done
 
-if [ "$mode" == "i" ]
+if [ "$mode" = "i" ]
 then
-    if [ "$ec" == "s" ]
+    if [ "$ec" = "s" ]
     then
         ./erasure_code/erasure_code_perf_from_file $loc_data $loc_parity $chunksize > $filename
-    elif [ "$ec" == "m" ]
+    elif [ "$ec" = "m" ]
     then
-        ./erasure_code/erasure_code_perf_mlec_split $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
-    elif [ "$ec" == "l" ]
+        ./erasure_code/erasure_code_perf_mlec $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
+    elif [ "$ec" = "l" ]
     then
         ./erasure_code/erasure_code_perf_lrc $loc_parity $local_groups $global_parity $local_parity $chunksize $type > $filename
     else
         echo "Error: Invalid EC method specified."
     fi
-elif [ "$mode" == "j" ]
+elif [ "$mode" = "j" ]
 then
-    if [ "$ec" == "s" ]
+    if [ "$ec" = "s" ]
     then
         arguments=$arguments$loc_data" "$loc_parity" "$chunksize
         ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmark run --args="$arguments" > $filename
-    elif [ "$ec" == "m" ]
+    elif [ "$ec" = "m" ]
     then
         arguments=$arguments$net_data" "$net_parity" "$loc_data" "$loc_parity" "$chunksize
         ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkMLEC run --args="$arguments" > $filename
-    elif [ "$ec" == "l" ]
+    elif [ "$ec" = "l" ]
     then
         arguments=$arguments$loc_parity" "$local_groups" "$global_parity" "$local_parity" "$chunksize
         ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkLRC run --args="$arguments" > $filename
