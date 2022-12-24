@@ -3,6 +3,7 @@ import argparse
 import re
 import time
 from os.path import exists
+import functions as func
 
 chunksize = 128
 throughput_filename = "throughput.log"
@@ -13,12 +14,7 @@ def CalculateThroughput(net_n=16, net_k=2, loc_n=8, loc_k=2):
     """
     print("\nCalculating Throughput...\n")
     os.system(f"../run_benchmark.sh -a {net_n} -b {net_k} -n {loc_n} -k {loc_k} -c {chunksize} -m i -f {throughput_filename} -e m")
-    with open(throughput_filename, "r") as f:
-        lines = f.readlines()
-    for key, line in enumerate(lines):
-        if ("Overall Throughput" in line):
-            desired_line = lines[key].split("Overall Throughput: ")[1].split(" MB/s")[0]
-    throughput = float(re.sub("[^0-9.]", "", desired_line))
+    throughput = func.GenerateSinglePoint(net_n, net_k, loc_n, loc_k)
     os.system(f"rm -rf {throughput_filename}")
     return throughput
 

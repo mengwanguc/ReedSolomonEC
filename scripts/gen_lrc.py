@@ -3,12 +3,10 @@ import argparse
 import re
 import time
 from os.path import exists
+from functions import func
+from constants import const
 
-max_k = 12
-max_parity = 12
-chunksize = 128
-mode = "j"
-throughput_filename = "throughput.log"
+
 javars_output_filename = "data/javars_opt_lrc.csv"
 isa_l_output_filename = "data/isa-l_opt_lrc.csv"
 opt = 1  # 0 for LRC, 1 for Optimal LRC
