@@ -1,9 +1,10 @@
 import os
 import time
-import functions as func
-import constants as const
+from lib import functions as func
+from config import constants as const
 
 output_path = "data/total_isa-l_sleconst.csv"
+
 
 def GenerateData():
     """
@@ -23,8 +24,8 @@ def GenerateData():
 
             # Skip this configuration if it has already been calculated.
             config_exists = ConfigExistsSLEC(n, k)
-                if config_exists:
-                    continue
+            if config_exists:
+                continue
 
             start_time = time.time()
 
@@ -41,9 +42,11 @@ def GenerateData():
 
             print("--- %s seconds elapsed in calculation ---\n" % (time.time() - start_time))
 
+
 def main():
     Recalibrate
     GenerateData()
+
 
 if __name__ == "__main__":
     main()

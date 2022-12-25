@@ -10,6 +10,21 @@
 
 ---
 
+## Configuration
+
+- Inside `scripts/config` directory there is a configuration file called `constants.py`.
+- This file contains all of the constants required for the Python scripts.
+- These constants must be configured correctly according to the requirements of the specific Python script.
+
+### Common Configurations to Change
+
+- `MODE`
+- `OUTPUT_PATH`
+- `MAX_VALUES` (different for each erasure coding type)
+- `CHUNKSIZE`
+
+---
+
 ## Single-Level Erasure Coding
 
 - The method for single-level erasure coding (or SLEC) is to use standard Reed-Solomon erasure coding techniques.
@@ -30,9 +45,6 @@
 ```
 ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkSLEC run n k chunksize
 ```
-
-- SLEC throughput can be measured using the following command:
-    - `python3 gen_slec.py`
 
 ---
 
@@ -66,28 +78,37 @@
 ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkMLEC run net_n net_k loc_n loc_k chunksize
 ```
 
-- MLEC throughput can be measured using the following command:
-    -  `python3 gen_mlec.py`
-
 ---
 
-## Heatmap Generation Steps:
+## Available Scripts
 
-- Command to run the heatmap generation script:
-    - `python3 heatmap.py [-n -k -m -o]`
-- Parameters:
-  - `n` = Number of data shards (default = `17`).
-  - `k` = Number of parity shards (defualt = `3`).
-  - `c` = Chunksize in KB (default = `128`).
-  - `m` = Mode (default = `i`):
-    - `i` to use the ISA-L tool.
-    - `j` to use the JavaReedSolomon tool.
-  - `o` = Heatmap filename with appropriate image extension (default = `heatmap.png`).
+- `gen_slec.py`:
+  - Generates SLEC throughput according to the `MAX_VALUE` constants specified in the configuration file.
+- `gen_lrc.py`:
+  - Generates LRC throughput according to the `MAX_VALUE` constants specified in the configuration file.
+- `heatmap.py`:
+  - Generates a heatmap of throughput performance for MLEC.
+- `compare_tools.py`:
+  - Compares the throughput performance of the ISA-L erasure coding tool to that of the Java Reed-Solomon erasure coding tool.
+  - Works with different erasure coding types.
+- `cache_test.py`:
+  - Test script for measuring and summarizing cache and throughput performance.
+- `reconstruct_figure.py`:
+  - Reconstructs figure 1 from the ECWide paper.
+  - Requires the correct throughput input.
 
 ---
 
 ## Back-End Files
 
 - `run_benchmark.sh`:
+  - Shell script that runs the proper throughput benchmarking commands according to specified flags.
+  - Look into file to see all of the possible flags.
+
+### Shared Functions
+
+- Inside the `scripts/lib` directory there is a file called `functions.py` that contains shared functions that are used by multiple Python scripts.
+- Can be helpful when writing a new script.
+- Modify where necessary according to needs.
 
 ---

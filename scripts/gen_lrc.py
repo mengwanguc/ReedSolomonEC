@@ -1,120 +1,56 @@
 import os
-import argparse
-import re
 import time
-from os.path import exists
-from functions import func
-from constants import const
+from lib import functions as func
+from config import constants as const
 
 
-javars_output_filename = "data/javars_opt_lrc.csv"
-isa_l_output_filename = "data/isa-l_opt_lrc.csv"
-opt = 1  # 0 for LRC, 1 for Optimal LRC
+def GenerateData():
+    """
+    Generates LRC throughput data.
+    """
 
+    # Ensure that first line in output file gives correct csv labels.
+    with open(const.OUTPUT_PATH, "a+") as f:
+        f.seek(0)
+        firstline = f.readline().rstrip()
+        if firstline != "k,l,r,p,throughput":
+            f.write("k,l,r,p,throughput\n")
 
-def run_benchmark(k, l, r, p, mode, opt):
-    os.system(
-        f"../run_benchmark.sh -k {k} -l {l} -r {r} -p {p} -c {chunksize} -m {mode} -f {throughput_filename} -e l -t {opt}")
+    # Loop through configurations.
+    for k in range(const.MAX_LRC_K):
+        for l in range(const.MAX_LRC_L):
+            for r in range(const.MAX_LRC_R):
 
-
-def point_throughput(mode):
-    with open(throughput_filename, "r") as f:
-        lines = f.readlines()
-    for key, line in enumerate(lines):
-        if ((mode == "i") and ("throughput2" in line)):
-            desired_line = lines[key].split("throughput2:")[1].split("MB/s")[0]
-        if ((mode == "j") and ("Summary:" in line)):
-            desired_line = lines[key + 2]
-    throughput = float(re.sub("[^0-9.]", "", desired_line))
-    return throughput
-
-
-def convertible(k, l, r):
-    if (k % l != 0):
-        return False
-    local_group = k/l
-    if (r % local_group != 0):
-        return False
-    return True
-
-
-def generate_data(mode, opt):
-
-    if (mode == "i"):
-        os.chdir("isa-l")
-    elif (mode == "j"):
-        os.chdir("JavaReedSolomon")
-    else:
-        print("ERROR: Incorrect mode\n")
-        exit()
-    for k in range(6, 7):
-        for l in range(2, 3):
-            for r in range(3, 4):
-                if not convertible(k, l, r):
+                # Check if LRC configuration is convertible.
+                if not func.Convertible(k, l, r):
                     continue
-                    # print("Error: LRC incovertable")
-                    # exit()
-                for p in range(5, 9):
-                    config_exists = False
-                    file_exists = exists("../" + output_file)
-                    if file_exists:
-                        with open("../" + output_file, "r") as f:
-                            lines = f.readlines()
-                            for line in lines:
-                                content = line.split(",")
-                                if (content[0] == str(k) and content[1] == str(l) and
-                                        content[2] == str(r) and content[3] == str(p)):
-                                    config_exists = True
-                                    break
+                for p in range(const.MAX_LRC_P):
+
+                    # Check if LRC configuration data already calculated.
+                    config_exists = func.ConfigExistsLRC(k, l, r, p)
                     if config_exists:
-                        print(
-                            f"Data for configuration ({k}, {l}, {r}, {p}) already exists\n")
                         continue
+
                     start_time = time.time()
+
+                    # Generate LRC throughput data.
                     print(f"Generating Data for: ({k}, {l}, {r}, {p})\n")
-                    run_benchmark(k, l, r, p, mode, opt)
-                    throughput = point_throughput(mode)
-                    os.remove(throughput_filename)
-                    with open("../" + output_file, "a+") as f:
-                        f.seek(0)
-                        firstline = f.readline().rstrip()
-                        if firstline != "k,l,r,p,throughput":
-                            f.write("k,l,r,p,throughput\n")
+                    func.RunBenchmarkLRC(k, l, r, p)
+                    throughput = func.ReadData()
+                    os.remove(const.THROUGHPUT_FILE)
+
+                    # Write LRC throughput data.
+                    with open(const.OUTPUT_PATH, "a+") as f:
                         f.seek(0, 2)
                         f.write(f"{k},{l},{r},{p},{throughput}\n")
-                    print(
-                        f"Configuration: ({k}, {l}, {r}, {p})\tThroughput: {throughput}\n")
-                    print("--- %s seconds elapsed in calculation ---\n" %
-                          (time.time() - start_time))
-    os.chdir("..")
+                    print(f"Configuration: ({k}, {l}, {r}, {p})\tThroughput: {throughput}\n")
 
-
-def parse_args():
-    global chunksize
-    global output_file
-    global mode
-    global opt
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", help="Chunksize in KB",
-                        default=chunksize, type=int)
-    parser.add_argument("-m", help="Mode", default=mode, type=str)
-    parser.add_argument("-o", help="Option", default=opt, type=int)
-    args = parser.parse_args()
-    chunksize = args.c
-    mode = args.m
-    opt = args.o
-    if mode == "i":
-        output_file = isa_l_output_filename
-    elif mode == "j":
-        output_file = javars_output_filename
-    else:
-        print("ERROR: Incorrect mode\n")
-        exit()
+                    print("--- %s seconds elapsed in calculation ---\n" % (time.time() - start_time))
 
 
 def main():
-    parse_args()
-    generate_data(mode, opt)
+    func.Recalibrate()
+    GenerateData()
 
 
 if __name__ == "__main__":
