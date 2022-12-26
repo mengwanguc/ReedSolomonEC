@@ -18,7 +18,6 @@ Furthermore, there are modifications to the ISA-L and Java Reed Solomon code bas
     -  -j8 is an optional performance optimization
 - The `isa-l` submodule needs to be on the `ReedSolomon` branch.
 
----
 
 ## Configuration
 
@@ -33,7 +32,6 @@ Furthermore, there are modifications to the ISA-L and Java Reed Solomon code bas
 - `MAX_VALUES` (different for each erasure coding type)
 - `CHUNKSIZE`
 
----
 
 ## Single-Level Erasure Coding
 
@@ -56,7 +54,6 @@ Furthermore, there are modifications to the ISA-L and Java Reed Solomon code bas
 ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkSLEC run n k chunksize
 ```
 
----
 
 ## Multi-Level Erasure Coding
 
@@ -88,7 +85,6 @@ Furthermore, there are modifications to the ISA-L and Java Reed Solomon code bas
 ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkMLEC run net_n net_k loc_n loc_k chunksize
 ```
 
----
 
 ## Available Scripts
 
@@ -107,7 +103,6 @@ Furthermore, there are modifications to the ISA-L and Java Reed Solomon code bas
   - Reconstructs figure 1 from the ECWide paper.
   - Requires the correct throughput input.
 
----
 
 ## Back-End Files
 
@@ -120,5 +115,3 @@ Furthermore, there are modifications to the ISA-L and Java Reed Solomon code bas
 - Inside the `scripts/lib` directory there is a file called `functions.py` that contains shared functions that are used by multiple Python scripts.
 - Can be helpful when writing a new script.
 - Modify where necessary according to needs.
-
----
