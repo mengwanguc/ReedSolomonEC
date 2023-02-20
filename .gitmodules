@@ -1,6 +1,8 @@
 [submodule "JavaReedSolomon"]
 	path = JavaReedSolomon
 	url = https://github.com/rajrana22/JavaReedSolomon
+	branch = main
 [submodule "isa-l"]
 	path = isa-l
 	url = https://github.com/rajrana22/isa-l
+	branch = main
