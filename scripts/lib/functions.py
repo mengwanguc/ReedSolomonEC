@@ -1,4 +1,5 @@
 import os
+import sys
 import re
 from config import constants as const
 from config.constants import ISA_L, JAVA_RS, SLEC, MLEC
@@ -54,14 +55,16 @@ def ReadData():
     with open(const.THROUGHPUT_FILE, "r") as file:
         lines = file.readlines()
     for key, line in enumerate(lines):
-        if ((const.MODE == ISA_L) and ("Overall Throughput" in line)):
-            desired_line = lines[key].split("Overall Throughput: ")[
+        if (const.MODE == ISA_L):
+            if ("Overall Throughput" in line):
+                desired_line = lines[key].split("Overall Throughput: ")[
                 1].split(" MB/s")[0]
-        elif ((const.MODE == JAVA_RS) and ("Summary:" in line)):
-            desired_line = lines[key + 2]
+        elif (const.MODE == JAVA_RS):
+            if ("Summary:" in line):
+                desired_line = lines[key + 2]
         else:
             print("ERROR: Incorrect mode\n")
-            os.EXIT_CONFIG
+            sys.exit(os.EX_SOFTWARE)
     throughput = float(re.sub("[^0-9.]", "", desired_line))
     return throughput
 
@@ -150,7 +153,7 @@ def ConvertLRC(k, l, r, p, ec_type):
         return network, local
     else:
         print("Error: Incorrect EC conversion type\n")
-        os.EXIT_CONFIG
+        sys.exit(os.EX_SOFTWARE)
 
 
 def FindDelta(old, new):

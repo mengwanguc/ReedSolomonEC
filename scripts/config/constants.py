@@ -44,6 +44,9 @@ THROUGHPUT_FILE = "throughput.log"
 # Output file path for data generation.
 OUTPUT_PATH = ISA_L_SLEC
 
+# Output image for heatmap.
+HEATMAP_PATH = "figures/heatmap.png"
+
 # Input file path to read data from.
 DURABILITY_DATA = "data/durability.csv"
 
