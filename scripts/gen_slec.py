@@ -3,7 +3,7 @@ import time
 from lib import functions as func
 from config import constants as const
 
-output_path = "data/total_isa-l_sleconst.csv"
+output_path = "data/total_isa-l_slec.csv"
 
 
 def GenerateData():
@@ -23,7 +23,7 @@ def GenerateData():
         for k in range(1, const.MAX_K + 1):
 
             # Skip this configuration if it has already been calculated.
-            config_exists = ConfigExistsSLEC(n, k)
+            config_exists = func.ConfigExistsSLEC(n, k)
             if config_exists:
                 continue
 
@@ -44,7 +44,7 @@ def GenerateData():
 
 
 def main():
-    Recalibrate
+    func.Recalibrate()
     GenerateData()
 
 
