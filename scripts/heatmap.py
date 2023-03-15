@@ -2,7 +2,7 @@ import os
 import numpy as np
 import seaborn as sns; sns.set_theme()
 import matplotlib.pylab as plt
-from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.colors import LinearSegmentedColormap, BoundaryNorm
 from config import constants as const
 from lib import functions as func
 
@@ -22,6 +22,15 @@ def ReadData():
         throughput, _ = throughput.split("\n")
         # Populate array with throughput data.
         array[k][n] = float(throughput)
+        # net_n, net_k, loc_n, loc_k, throughput = line.split(",")
+        # net_n = int(net_n)
+        # net_k = int(net_k)
+        # loc_n = int(loc_n)
+        # loc_k = int(loc_k)
+        # if (net_n = 10) and (net_k = 2):
+        #     throughput, _ = throughput.split("\n")
+        #     # Populate array with throughput data.
+        #     array[loc_k][loc_n] = float(throughput)
 
     return array
 
@@ -34,13 +43,20 @@ def GenerateHeatmap(data):
 
     # Tuning heatmap parameters.
     # cmap = LinearSegmentedColormap.from_list("", ["red", "purple", "orange", "yellow", "lightgreen"], N=100)
-    myColors = ("Red", "Purple", "Orange", "Yellow", "Green")
-    cmap = LinearSegmentedColormap.from_list("Custom", myColors, len(myColors))
+    colorlist = ['black', 'maroon', 'red', '#ff7200', '#FFAF00', 'yellow', 'lime', '#00AF00', 'darkgreen', 'pink']
+    # myColors = ("Red", "Purple", "Orange", "Yellow", "Green")
+    cmap = LinearSegmentedColormap.from_list("Custom", colorlist, len(colorlist))
+    bounds = [0, 1000, 2000, 3000, 4000, 5000, 6000, 8000, 10000, 12000]
+    norm = BoundaryNorm(bounds, len(colorlist) - 1)
     mask = np.isnan(array)
 
     plt.figure(figsize=(16, 6))
-    cbar_kws = {"label": "Throughput (MB/s)", "drawedges": False, "shrink": 0.5}
-    ax = sns.heatmap(array, cmap=cmap, mask=mask, linewidths=0.5, cbar_kws=cbar_kws, square=True)
+    ticks = np.arange(0, 12001, 2000)
+    cbar_kws = {"label": "Throughput (MB/s)", "drawedges": False, "shrink": 0.5, "spacing": "proportional", "ticks": ticks}
+    ax = sns.heatmap(array, cmap=cmap, norm=norm, mask=mask, linewidths=0.5, cbar_kws=cbar_kws, square=True)
+
+    # cbar = plt.colorbar(ax.collections[0], ticks=ticker.MultipleLocator(2000), **cbar_kws)
+    # cbar.ax.yaxis.set_tick_params(width=0)
 
     # X-Y axis labels
     ax.set_ylabel("Parity Units K", fontsize=12)

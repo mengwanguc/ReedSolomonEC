@@ -42,10 +42,13 @@ MODE = ISA_L
 THROUGHPUT_FILE = "throughput.log"
 
 # Output file path for data generation.
+# MAKE SURE TO CHANGE THIS WHEN NEEDED.
 OUTPUT_PATH = ISA_L_SLEC
+# OUTPUT_PATH = "data/fixed_net_isa-l_mlec.csv"
 
 # Output image for heatmap.
-HEATMAP_PATH = "figures/heatmap.png"
+HEATMAP_PATH = "figures/SLEC_heatmap.png"
+# HEATMAP_PATH = "figures/fix_net_10+2_MLEC_heatmap.png"
 
 # Input file path to read data from.
 DURABILITY_DATA = "data/durability.csv"
@@ -61,16 +64,16 @@ MAX_K = 10
 # ------------------------------ MLEC Constants ------------------------------ #
 
 # Maximum value for network-level data chunks.
-MAX_NET_N = 16
+MAX_NET_N = 50
 
 # Maximum value for network-level parity chunks.
-MAX_NET_K = 2
+MAX_NET_K = 10
 
 # Maximum value for local-level data chunks.
-MAX_LOC_N = 8
+MAX_LOC_N = 50
 
 # Maximum value for local-level parity chunks.
-MAX_LOC_K = 2
+MAX_LOC_K = 10
 
 # ------------------------------- LRC Constants ------------------------------ #
 
