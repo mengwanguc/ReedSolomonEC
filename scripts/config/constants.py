@@ -43,12 +43,12 @@ THROUGHPUT_FILE = "throughput.log"
 
 # Output file path for data generation.
 # MAKE SURE TO CHANGE THIS WHEN NEEDED.
-OUTPUT_PATH = ISA_L_SLEC
-# OUTPUT_PATH = "data/fixed_net_isa-l_mlec.csv"
+# OUTPUT_PATH = ISA_L_SLEC
+OUTPUT_PATH = "data/fixed_net_isa-l_mlec.csv"
 
 # Output image for heatmap.
-HEATMAP_PATH = "figures/SLEC_heatmap.png"
-# HEATMAP_PATH = "figures/fix_net_10+2_MLEC_heatmap.png"
+# HEATMAP_PATH = "figures/SLEC_heatmap.png"
+HEATMAP_PATH = "figures/fix_net_10+2_MLEC_heatmap.png"
 
 # Input file path to read data from.
 DURABILITY_DATA = "data/durability.csv"
