@@ -16,21 +16,21 @@ def ReadData():
 
     lines = func.GetLines()
     for line in lines[1:]:
-        # n, k, throughput = line.split(",")
-        # n = int(n)
-        # k = int(k)
-        # throughput, _ = throughput.split("\n")
-        # # Populate array with throughput data.
-        # array[k][n] = float(throughput)
-        net_n, net_k, loc_n, loc_k, throughput = line.split(",")
-        net_n = int(net_n)
-        net_k = int(net_k)
-        loc_n = int(loc_n)
-        loc_k = int(loc_k)
-        if (net_n == 10) and (net_k == 2):
-            throughput, _ = throughput.split("\n")
-            # Populate array with throughput data.
-            array[loc_k][loc_n] = float(throughput)
+        n, k, throughput = line.split(",")
+        n = int(n)
+        k = int(k)
+        throughput, _ = throughput.split("\n")
+        # Populate array with throughput data.
+        array[k][n] = float(throughput)
+        # net_n, net_k, loc_n, loc_k, throughput = line.split(",")
+        # net_n = int(net_n)
+        # net_k = int(net_k)
+        # loc_n = int(loc_n)
+        # loc_k = int(loc_k)
+        # if (net_n == 5) and (net_k == 1):
+        #     throughput, _ = throughput.split("\n")
+        #     # Populate array with throughput data.
+        #     array[loc_k][loc_n] = float(throughput)
 
     return array
 

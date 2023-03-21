@@ -5,16 +5,16 @@ Declaration of constants used by Python scripts.
 # ------------------------------ Data File Paths ----------------------------- #
 
 # Total SLEC data.
-ISA_L_SLEC = "data/total_isa-l_slec.csv"
-JAVA_RS_SLEC = "data/total_javars_slec.csv"
+ISA_L_SLEC = "data/isa-l_encode_slec.csv"
+JAVA_RS_SLEC = "data/javars_encode_slec.csv"
 
 # Total MLEC data.
-ISA_L_MLEC = "data/total_isa-l_mlec.csv"
-JAVA_RS_MLEC = "data/total_javars_mlec.csv"
+ISA_L_MLEC = "data/isa-l_encode_mlec.csv"
+JAVA_RS_MLEC = "data/javars_encode_mlec.csv"
 
 # Total LRC data.
-ISA_L_LRC = "data/total_isa-l_lrc.csv"
-JAVA_RS_LRC = "data/total_javars_lrc.csv"
+ISA_L_LRC = "data/isa-l_encode_lrc.csv"
+JAVA_RS_LRC = "data/javars_encode_lrc.csv"
 
 # Durability data.
 SLEC_DURABILITY = "data/slec_durability.csv"
@@ -26,6 +26,7 @@ MLEC_DURABILITY = "data/mlec_durability.csv"
 SLEC = 0
 MLEC = 1
 LRC = 2
+DEC_SLEC = 3
 
 # Erasure coding tool enumerations
 ISA_L = 0
@@ -44,11 +45,10 @@ THROUGHPUT_FILE = "throughput.log"
 # Output file path for data generation.
 # MAKE SURE TO CHANGE THIS WHEN NEEDED.
 # OUTPUT_PATH = ISA_L_SLEC
-OUTPUT_PATH = "data/fixed_net_isa-l_mlec.csv"
+OUTPUT_PATH = "data/isa-l_decode_slec.csv"
 
 # Output image for heatmap.
-# HEATMAP_PATH = "figures/SLEC_heatmap.png"
-HEATMAP_PATH = "figures/fix_net_10+2_MLEC_heatmap.png"
+HEATMAP_PATH = "figures/SLEC_decoding_heatmap.png"
 
 # Input file path to read data from.
 DURABILITY_DATA = "data/durability.csv"

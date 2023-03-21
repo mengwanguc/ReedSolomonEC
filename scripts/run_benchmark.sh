@@ -6,6 +6,7 @@ export JAVA_RS=1
 export SLEC=0
 export MLEC=1
 export LRC=2
+export DEC_SLEC=3
 
 arguments=""
 
@@ -31,13 +32,16 @@ if [ "$mode" = "$ISA_L" ]
 then
     if [ "$ec" = "$SLEC" ]
     then
-        ./isa-l/erasure_code/erasure_code_perf_from_file $loc_data $loc_parity $chunksize > $filename
+        ./isa-l/erasure_code/erasure_encode_slec $loc_data $loc_parity $chunksize > $filename
     elif [ "$ec" = "$MLEC" ]
     then
         ./isa-l/erasure_code/erasure_code_perf_mlec $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
     elif [ "$ec" = "$LRC" ]
     then
         ./isa-l/erasure_code/erasure_code_perf_lrc $loc_parity $local_groups $global_parity $local_parity $chunksize $type > $filename
+    elif [ "$ec" = "$DEC_SLEC" ]
+    then
+        ./isa-l/erasure_code/erasure_decode_slec $loc_data $loc_parity $chunksize > $filename
     else
         echo "Error: Invalid EC method specified."
     fi
