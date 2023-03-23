@@ -3,6 +3,7 @@ import numpy as np
 import seaborn as sns; sns.set_theme()
 import matplotlib.pylab as plt
 from matplotlib.colors import LinearSegmentedColormap, BoundaryNorm
+from matplotlib.colors import ListedColormap
 from config import constants as const
 from lib import functions as func
 
@@ -16,21 +17,21 @@ def ReadData():
 
     lines = func.GetLines()
     for line in lines[1:]:
-        n, k, throughput = line.split(",")
-        n = int(n)
-        k = int(k)
-        throughput, _ = throughput.split("\n")
-        # Populate array with throughput data.
-        array[k][n] = float(throughput)
-        # net_n, net_k, loc_n, loc_k, throughput = line.split(",")
-        # net_n = int(net_n)
-        # net_k = int(net_k)
-        # loc_n = int(loc_n)
-        # loc_k = int(loc_k)
-        # if (net_n == 5) and (net_k == 1):
-        #     throughput, _ = throughput.split("\n")
-        #     # Populate array with throughput data.
-        #     array[loc_k][loc_n] = float(throughput)
+        # n, k, throughput = line.split(",")
+        # n = int(n)
+        # k = int(k)
+        # throughput, _ = throughput.split("\n")
+        # # Populate array with throughput data.
+        # array[k][n] = float(throughput) / 1000
+        net_n, net_k, loc_n, loc_k, throughput = line.split(",")
+        net_n = int(net_n)
+        net_k = int(net_k)
+        loc_n = int(loc_n)
+        loc_k = int(loc_k)
+        if (net_n == 10) and (net_k == 2):
+            throughput, _ = throughput.split("\n")
+            # Populate array with throughput data.
+            array[loc_k][loc_n] = float(throughput) / 1000
 
     return array
 
@@ -41,22 +42,19 @@ def GenerateHeatmap(data):
 
     array = np.array(data, dtype=float)
 
-    # Tuning heatmap parameters.
-    # cmap = LinearSegmentedColormap.from_list("", ["red", "purple", "orange", "yellow", "lightgreen"], N=100)
-    colorlist = ['black', 'maroon', 'red', '#ff7200', '#FFAF00', 'yellow', 'lime', '#00AF00', 'darkgreen', 'pink']
-    # myColors = ("Red", "Purple", "Orange", "Yellow", "Green")
-    cmap = LinearSegmentedColormap.from_list("Custom", colorlist, len(colorlist))
-    bounds = [0, 1000, 2000, 3000, 4000, 5000, 6000, 8000, 10000, 12000]
-    norm = BoundaryNorm(bounds, len(colorlist) - 1)
+    # print(np.nanmax(array))
+
+    # Define custom colormap
+    colorlist = ['black', 'maroon', 'red', '#ff7200', '#FFAF00', 'yellow', 'lime', '#00AF00', 'darkgreen']
+    n_colors = 256  # number of colors in the colormap
+    cmap = LinearSegmentedColormap.from_list("Custom", colorlist, N=n_colors)
+
+    # Generate heatmap
     mask = np.isnan(array)
-
     plt.figure(figsize=(16, 6))
-    ticks = np.arange(0, 12001, 2000)
-    cbar_kws = {"label": "Throughput (MB/s)", "drawedges": False, "shrink": 0.5, "spacing": "proportional", "ticks": ticks}
-    ax = sns.heatmap(array, cmap=cmap, norm=norm, mask=mask, linewidths=0.5, cbar_kws=cbar_kws, square=True)
-
-    # cbar = plt.colorbar(ax.collections[0], ticks=ticker.MultipleLocator(2000), **cbar_kws)
-    # cbar.ax.yaxis.set_tick_params(width=0)
+    ticks = np.linspace(0, 6, 13)
+    cbar_kws = {"label": "Throughput (GB/s)", "drawedges": False, "shrink": 0.5, "spacing": "proportional", "ticks": ticks}
+    ax = sns.heatmap(array, cmap=cmap, mask=mask, linewidths=0.5, cbar_kws=cbar_kws, square=True)
 
     # X-Y axis labels
     ax.set_ylabel("Parity Units K", fontsize=12)
@@ -74,7 +72,9 @@ def GenerateHeatmap(data):
     ax.set_yticks(y_tick_positions)
     ax.set_yticklabels(y_tick_labels, rotation=0, va='center')
 
-
+    # Set title
+    # ax.set_title("SLEC Encoding Heatmap", fontdict = {'fontsize' : 16}, y=1.08)
+    ax.set_title("Parallel MLEC (10,2)/(X,Y) Heatmap", fontdict = {'fontsize' : 16}, y=1.08)
 
     # Set boundary around outside of heatmap
     for _, spine in ax.spines.items():
