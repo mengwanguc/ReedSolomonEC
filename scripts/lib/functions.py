@@ -34,7 +34,7 @@ def RunBenchmarkMLEC(net_n, net_k, loc_n, loc_k):
         loc_n   local data chunks
         loc_k   local parity chunks
     """
-    os.system(f"./run_benchmark.sh -a {net_n} -b {net_k} -n {loc_n} -k {loc_k} -c {const.CHUNKSIZE} -m {const.MODE} -e {const.MLEC} -f {const.THROUGHPUT_FILE}")
+    os.system(f"./run_benchmark.sh -a {net_n} -b {net_k} -n {loc_n} -k {loc_k} -c {const.CHUNKSIZE} -m {const.MODE} -e {MLEC} -f {const.THROUGHPUT_FILE}")
 
 
 def RunBenchmarkLRC(k, l, r, p):

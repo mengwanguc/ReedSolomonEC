@@ -3,9 +3,6 @@ import time
 from lib import functions as func
 from config import constants as const
 
-output_path = "data/total_isa-l_slec.csv"
-
-
 def GenerateData():
     """
     Generates SLEC data given configurations.

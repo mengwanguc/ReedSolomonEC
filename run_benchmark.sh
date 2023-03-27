@@ -32,16 +32,19 @@ if [ "$mode" = "$ISA_L" ];
 then
     if [ "$ec" = "$SLEC" ];
     then
+        echo "Running ISA-L SLEC Encoding Process"
         ./isa-l/erasure_code/erasure_code_perf_from_file $loc_data $loc_parity $chunksize > $filename
     elif [ "$ec" = "$MLEC" ];
     then
-        ./isa-l/erasure_code/erasure_code_perf_mlec $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
+        echo "Running ISA-L Parallel MLEC Encoding Process"
+        ./isa-l/erasure_code/erasure_code_perf_mlec_split $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
     elif [ "$ec" = "$LRC" ];
     then
+        echo "Running ISA-L LRC Encoding Process"
         ./isa-l/erasure_code/erasure_code_perf_lrc $loc_parity $local_groups $global_parity $local_parity $chunksize $type > $filename
     elif [ "$ec" = "$DEC_SLEC" ];
     then
-        echo "GOOD"
+        echo "Running ISA-L SLEC Decoding Process"
         ./isa-l/erasure_code/erasure_decode_slec $loc_data $loc_parity $chunksize > $filename
     else
         echo "Error: Invalid EC method specified."
@@ -50,14 +53,17 @@ elif [ "$mode" = "$JAVA_RS" ];
 then
     if [ "$ec" = "$SLEC" ];
     then
+        echo "Running JAVA RS SLEC Encoding Process"
         arguments=$arguments$loc_data" "$loc_parity" "$chunksize
         ./JavaReedSolomon/gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmark run --args="$arguments" > $filename
     elif [ "$ec" = "$MLEC" ];
     then
+        echo "Running JAVA RS MLEC Encoding Process"
         arguments=$arguments$net_data" "$net_parity" "$loc_data" "$loc_parity" "$chunksize
         ./JavaReedSolomon/gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkMLEC run --args="$arguments" > $filename
     elif [ "$ec" = "$LRC" ];
     then
+        echo "Running JAVA RS LRC Encoding Process"
         arguments=$arguments$loc_parity" "$local_groups" "$global_parity" "$local_parity" "$chunksize
         ./JavaReedSolomon/gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkLRC run --args="$arguments" > $filename
     else
