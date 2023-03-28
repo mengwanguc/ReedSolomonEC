@@ -32,7 +32,7 @@ DEC_SLEC = 3
 ISA_L = 0
 JAVA_RS = 1
 
-# Chunk size in MB.
+# Chunk size in KB.
 CHUNKSIZE = 128
 
 # Erasure coding "mode" to be used:
@@ -44,11 +44,12 @@ THROUGHPUT_FILE = "throughput.log"
 
 # Output file path for data generation.
 # MAKE SURE TO CHANGE THIS WHEN NEEDED.
-# OUTPUT_PATH = ISA_L_SLEC
-OUTPUT_PATH = "data/isa-l_encode_mlec_parallel.csv"
+OUTPUT_PATH = "data/isa-l_encode_slec.csv"
+# OUTPUT_PATH = "data/isa-l_encode_mlec_serial.csv"
 
 # Output image for heatmap.
-HEATMAP_PATH = "figures/MLEC_parallel_10+2_fixed_heatmap.png"
+HEATMAP_PATH = "figures/SLEC_encoding_heatmap.png"
+# HEATMAP_PATH = "figures/MLEC_encoding_serial_heatmap.png"
 
 # Input file path to read data from.
 DURABILITY_DATA = "data/durability.csv"
