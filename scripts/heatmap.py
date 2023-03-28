@@ -31,10 +31,12 @@ def ReadData():
         net_k = int(net_k)
         loc_n = int(loc_n)
         loc_k = int(loc_k)
-        if (net_n == 10) and (net_k == 2) and (loc_n <= const.MAX_LOC_N) and (loc_k <= const.MAX_LOC_K):
+        # if (net_n == 10) and (net_k == 2) and (loc_n <= const.MAX_LOC_N) and (loc_k <= const.MAX_LOC_K):
+        if (loc_n == 5) and (loc_k == 1) and (net_n <= const.MAX_NET_N) and (net_k <= const.MAX_NET_K):
             throughput, _ = throughput.split("\n")
             # Populate array with throughput data.
-            array[loc_k][loc_n] = float(throughput) / 1000
+            # array[loc_k][loc_n] = float(throughput) / 1000
+            array[net_k][net_n] = float(throughput) / 1000
 
     return array
 
@@ -81,7 +83,7 @@ def GenerateHeatmap(data):
 
     # Set title
     # ax.set_title("SLEC Encoding Throughput Heatmap", fontdict={'fontsize': 16}, y=1.08)
-    ax.set_title("Parallel MLEC (10+2)/(X+Y) Encoding Throughput Heatmap", fontdict={'fontsize': 16}, y=1.08)
+    ax.set_title("Serial MLEC (X+Y)/(5+1) Encoding Throughput Heatmap", fontdict={'fontsize': 16}, y=1.08)
 
     # Set boundary around outside of heatmap
     for _, spine in ax.spines.items():

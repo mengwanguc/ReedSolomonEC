@@ -33,11 +33,13 @@ def ReadData():
         net_k = int(net_k)
         loc_n = int(loc_n)
         loc_k = int(loc_k)
-        if (net_n <= const.MAX_NET_N) and (net_k <= const.MAX_NET_K) and (loc_n == 10) and (loc_k == 2):
+        # if (net_n == 17) and (net_k == 3) and (loc_n <= const.MAX_LOC_N) and (loc_k <= const.MAX_LOC_K):
+        if (net_n <= const.MAX_NET_N) and (net_k <= const.MAX_NET_K) and (loc_n == 5) and (loc_k == 1):
             throughput, _ = throughput.split("\n")
             # Populate array with throughput data.
             throughput = float(throughput) / 1000
             array[net_k][net_n] = 75 / throughput
+            # array[loc_k][loc_n] = 75 / throughput
 
     return array
 
@@ -64,7 +66,7 @@ def GenerateHeatmap(data):
     ticks = [0, 10, 20, 30, 40, 50, 60, 70]
     vmax = 70
     vmin = 0
-    cbar_kws = {"label": "Throughput (GB/s)", "drawedges": False, "shrink": 0.5, "spacing": "proportional", "ticks": ticks}
+    cbar_kws = {"label": "Number of Cores", "drawedges": False, "shrink": 0.5, "spacing": "proportional", "ticks": ticks}
     ax = sns.heatmap(array, cmap=cmap, mask=mask, linewidths=0.5, cbar_kws=cbar_kws, square=True, vmax=vmax, vmin=vmin)
 
     # X-Y axis labels
@@ -85,7 +87,7 @@ def GenerateHeatmap(data):
 
     # Set title
     # ax.set_title("Number of Cores to Achieve 600 Gbps for SLEC", fontdict={'fontsize': 16}, y=1.08)
-    ax.set_title("Number of Cores to Achieve 600 Gbps for MLEC (X+Y)/(10+2)", fontdict={'fontsize': 16}, y=1.08)
+    ax.set_title("Number of Cores to Achieve 600 Gbps for MLEC (X+Y)/(5+1)", fontdict={'fontsize': 16}, y=1.08)
 
     # Set boundary around outside of heatmap
     for _, spine in ax.spines.items():

@@ -16,8 +16,8 @@ def GenerateData():
         if firstline != "network_data,network_parity,local_data,local_parity,throughput":
             f.write("network_data,network_parity,local_data,local_parity,throughput\n")
 
-    loc_n = 10
-    loc_k = 2
+    loc_n = 5
+    loc_k = 1
     # Loop through configurations.
     for net_n in range(1, const.MAX_NET_N + 1):
         for net_k in range(1, const.MAX_NET_K + 1):

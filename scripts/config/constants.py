@@ -51,9 +51,10 @@ OUTPUT_PATH = "data/isa-l_encode_mlec_serial.csv"
 INPUT_PATH = "data/isa-l_encode_mlec_serial.csv"
 
 # Output image for heatmap.
+# HEATMAP_PATH = "figures/SLEC_encoding.png"
 # HEATMAP_PATH = "figures/Num_Cores_SLEC.png"
-HEATMAP_PATH = "figures/Num_Cores_10+2_loc_MLEC.png"
-# HEATMAP_PATH = "figures/MLEC_parallel_10+2_net_encoding.png"
+# HEATMAP_PATH = "figures/Num_Cores_5+1_loc_MLEC.png"
+HEATMAP_PATH = "figures/MLEC_serial_5+1_loc_encoding.png"
 
 # Input file path to read durability data from.
 DURABILITY_DATA = "data/durability.csv"
