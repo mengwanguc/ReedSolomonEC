@@ -16,11 +16,11 @@ def GenerateData():
         if firstline != "network_data,network_parity,local_data,local_parity,throughput":
             f.write("network_data,network_parity,local_data,local_parity,throughput\n")
 
-    net_n = 10
-    net_k = 2
+    loc_n = 10
+    loc_k = 2
     # Loop through configurations.
-    for loc_n in range(1, const.MAX_LOC_N + 1):
-        for loc_k in range(1, const.MAX_LOC_K + 1):
+    for net_n in range(1, const.MAX_NET_N + 1):
+        for net_k in range(1, const.MAX_NET_K + 1):
 
             # Skip this configuration if it has already been calculated.
             config_exists = func.ConfigExistsMLEC(net_n, net_k, loc_n, loc_k)

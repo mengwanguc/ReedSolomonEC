@@ -23,18 +23,21 @@ def ReadData():
         # n, k, throughput = line.split(",")
         # n = int(n)
         # k = int(k)
-        # throughput, _ = throughput.split("\n")
-        # # Populate array with throughput data.
-        # array[k][n] = float(throughput) / 1000
+        # if (n <= const.MAX_N) and (k <= const.MAX_K):
+        #     throughput, _ = throughput.split("\n")
+        #     # Populate array with throughput data.
+        #     throughput = float(throughput) / 1000
+        #     array[k][n] = 75 / throughput
         net_n, net_k, loc_n, loc_k, throughput = line.split(",")
         net_n = int(net_n)
         net_k = int(net_k)
         loc_n = int(loc_n)
         loc_k = int(loc_k)
-        if (net_n == 10) and (net_k == 2) and (loc_n <= const.MAX_LOC_N) and (loc_k <= const.MAX_LOC_K):
+        if (net_n <= const.MAX_NET_N) and (net_k <= const.MAX_NET_K) and (loc_n == 10) and (loc_k == 2):
             throughput, _ = throughput.split("\n")
             # Populate array with throughput data.
-            array[loc_k][loc_n] = float(throughput) / 1000
+            throughput = float(throughput) / 1000
+            array[net_k][net_n] = 75 / throughput
 
     return array
 
@@ -51,14 +54,15 @@ def GenerateHeatmap(data):
     # Define custom colormap
     # colorlist = ['black', 'maroon', 'red', '#ff7200', '#FFAF00', 'yellow', 'lime', '#00AF00', 'darkgreen']
     colorlist = ['black', 'maroon', 'red', '#FF4000', '#FF8000', '#FFC000', 'yellow', '#E6FF00', '#B3FF00', 'lime', '#00D100', '#009500', 'darkgreen']
+    colorlist.reverse()
     n_colors = 256  # number of colors in the colormap
     cmap = LinearSegmentedColormap.from_list("Custom", colorlist, N=n_colors)
 
     # Generate heatmap
     mask = np.isnan(array)
     plt.figure(figsize=(16, 6))
-    ticks = [0, 2, 4, 6, 8, 10, 12]
-    vmax = 12
+    ticks = [0, 10, 20, 30, 40, 50, 60, 70]
+    vmax = 70
     vmin = 0
     cbar_kws = {"label": "Throughput (GB/s)", "drawedges": False, "shrink": 0.5, "spacing": "proportional", "ticks": ticks}
     ax = sns.heatmap(array, cmap=cmap, mask=mask, linewidths=0.5, cbar_kws=cbar_kws, square=True, vmax=vmax, vmin=vmin)
@@ -80,8 +84,8 @@ def GenerateHeatmap(data):
     ax.set_yticklabels(y_tick_labels, rotation=0, va='center')
 
     # Set title
-    # ax.set_title("SLEC Encoding Throughput Heatmap", fontdict={'fontsize': 16}, y=1.08)
-    ax.set_title("Parallel MLEC (10+2)/(X+Y) Encoding Throughput Heatmap", fontdict={'fontsize': 16}, y=1.08)
+    # ax.set_title("Number of Cores to Achieve 600 Gbps for SLEC", fontdict={'fontsize': 16}, y=1.08)
+    ax.set_title("Number of Cores to Achieve 600 Gbps for MLEC (X+Y)/(10+2)", fontdict={'fontsize': 16}, y=1.08)
 
     # Set boundary around outside of heatmap
     for _, spine in ax.spines.items():

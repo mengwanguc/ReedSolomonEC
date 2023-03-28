@@ -36,8 +36,8 @@ then
         ./isa-l/erasure_code/erasure_code_perf_from_file $loc_data $loc_parity $chunksize > $filename
     elif [ "$ec" = "$MLEC" ];
     then
-        echo "Running ISA-L Parallel MLEC Encoding Process"
-        ./isa-l/erasure_code/erasure_code_perf_mlec_split $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
+        echo "Running ISA-L Serial MLEC Encoding Process"
+        ./isa-l/erasure_code/erasure_code_perf_mlec $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
     elif [ "$ec" = "$LRC" ];
     then
         echo "Running ISA-L LRC Encoding Process"

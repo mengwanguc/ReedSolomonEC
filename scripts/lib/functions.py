@@ -73,9 +73,9 @@ def GetLines():
     """
     Fetches the lines in the output file.
     """
-    file_exists = os.path.exists(const.OUTPUT_PATH)
+    file_exists = os.path.exists(const.INPUT_PATH)
     if file_exists:
-        with open(const.OUTPUT_PATH, "r") as f:
+        with open(const.INPUT_PATH, "r") as f:
             lines = f.readlines()
             return lines
 

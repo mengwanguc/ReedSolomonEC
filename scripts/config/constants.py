@@ -43,15 +43,19 @@ MODE = ISA_L
 THROUGHPUT_FILE = "throughput.log"
 
 # Output file path for data generation.
-# MAKE SURE TO CHANGE THIS WHEN NEEDED.
-OUTPUT_PATH = "data/isa-l_encode_slec.csv"
-# OUTPUT_PATH = "data/isa-l_encode_mlec_serial.csv"
+# OUTPUT_PATH = "data/isa-l_encode_slec.csv"
+OUTPUT_PATH = "data/isa-l_encode_mlec_serial.csv"
+
+# Input file path for data usage.
+# INPUT_PATH = "data/isa-l_encode_slec.csv"
+INPUT_PATH = "data/isa-l_encode_mlec_serial.csv"
 
 # Output image for heatmap.
-HEATMAP_PATH = "figures/SLEC_encoding_heatmap.png"
-# HEATMAP_PATH = "figures/MLEC_serial_10+2_encoding_heatmap.png"
+# HEATMAP_PATH = "figures/Num_Cores_SLEC.png"
+HEATMAP_PATH = "figures/Num_Cores_10+2_loc_MLEC.png"
+# HEATMAP_PATH = "figures/MLEC_parallel_10+2_net_encoding.png"
 
-# Input file path to read data from.
+# Input file path to read durability data from.
 DURABILITY_DATA = "data/durability.csv"
 
 # ------------------------------ SLEC Constants ------------------------------ #
@@ -65,16 +69,16 @@ MAX_K = 10
 # ------------------------------ MLEC Constants ------------------------------ #
 
 # Maximum value for network-level data chunks.
-MAX_NET_N = 50
+MAX_NET_N = 20
 
 # Maximum value for network-level parity chunks.
-MAX_NET_K = 10
+MAX_NET_K = 5
 
 # Maximum value for local-level data chunks.
-MAX_LOC_N = 50
+MAX_LOC_N = 20
 
 # Maximum value for local-level parity chunks.
-MAX_LOC_K = 10
+MAX_LOC_K = 5
 
 # ------------------------------- LRC Constants ------------------------------ #
 
