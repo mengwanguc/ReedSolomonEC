@@ -49,7 +49,7 @@ OUTPUT_PATH = "data/isa-l_encode_slec.csv"
 
 # Output image for heatmap.
 HEATMAP_PATH = "figures/SLEC_encoding_heatmap.png"
-# HEATMAP_PATH = "figures/MLEC_encoding_serial_heatmap.png"
+# HEATMAP_PATH = "figures/MLEC_serial_10+2_encoding_heatmap.png"
 
 # Input file path to read data from.
 DURABILITY_DATA = "data/durability.csv"
