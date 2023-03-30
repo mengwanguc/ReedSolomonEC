@@ -45,7 +45,7 @@ def RunBenchmarkLRC(k, l, r, p):
         r   global parity chunks
         p   local parity chunks
     """
-    os.system(f"../run_benchmark.sh -k {k} -l {l} -r {r} -p {p} -c {const.CHUNKSIZE} -m {const.MODE} -e {const.LRC} -f {const.THROUGHPUT_FILE} -e l -t {const.LRC_OPT}")
+    os.system(f"./run_benchmark.sh -k {k} -l {l} -r {r} -p {p} -c {const.CHUNKSIZE} -m {const.MODE} -e {const.LRC} -f {const.THROUGHPUT_FILE}")
 
 
 def ReadData():
@@ -134,8 +134,11 @@ def Convertible(k, l, r):
 
     # Check number of global parities.
     local_group = k / l
-    if (r % local_group != 0):
+    if not (local_group).is_integer():
+        print(f"{local_group} is not an integer")
         return False
+    # if (r % local_group != 0):
+    #     return False
     return True
 
 

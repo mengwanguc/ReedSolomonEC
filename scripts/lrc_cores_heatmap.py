@@ -15,31 +15,21 @@ def ReadData():
     """
 
     # Create empty array that can be populated with data.
-    array = [[np.nan for n in range(const.MAX_N + 1)] for k in range(const.MAX_K + 1)]
-    # array = [[np.nan for n in range(const.MAX_LOC_N + 1)] for k in range(const.MAX_LOC_K + 1)]
+    # array = [[np.nan for n in range(const.MAX_N + 1)] for k in range(const.MAX_K + 1)]
+    array = [[np.nan for k in range(const.MAX_LRC_K + 1)] for r in range(const.MAX_LRC_R + 1)]
 
     lines = func.GetLines()
     for line in lines[1:]:
-        n, k, throughput = line.split(",")
-        n = int(n)
+        k, l, r, p, throughput = line.split(",")
         k = int(k)
-        if (n <= const.MAX_N) and (k <= const.MAX_K):
+        l = int(l)
+        r = int(r)
+        p = int(p)
+        if (l == 2) and (p == 1) and (k <= const.MAX_LRC_K) and (r <= const.MAX_LRC_R):
             throughput, _ = throughput.split("\n")
             # Populate array with throughput data.
             throughput = float(throughput) / 1000
-            array[k][n] = 75 / throughput
-        # net_n, net_k, loc_n, loc_k, throughput = line.split(",")
-        # net_n = int(net_n)
-        # net_k = int(net_k)
-        # loc_n = int(loc_n)
-        # loc_k = int(loc_k)
-        # # if (net_n == 17) and (net_k == 3) and (loc_n <= const.MAX_LOC_N) and (loc_k <= const.MAX_LOC_K):
-        # if (net_n <= const.MAX_NET_N) and (net_k <= const.MAX_NET_K) and (loc_n == 5) and (loc_k == 1):
-        #     throughput, _ = throughput.split("\n")
-        #     # Populate array with throughput data.
-        #     throughput = float(throughput) / 1000
-        #     array[net_k][net_n] = 75 / throughput
-        #     # array[loc_k][loc_n] = 75 / throughput
+            array[r][k] = 75 / throughput
 
     return array
 
@@ -70,8 +60,8 @@ def GenerateHeatmap(data):
     ax = sns.heatmap(array, cmap=cmap, mask=mask, linewidths=0.5, cbar_kws=cbar_kws, square=True, vmax=vmax, vmin=vmin)
 
     # X-Y axis labels
-    ax.set_ylabel("Parity Units K", fontsize=12)
-    ax.set_xlabel("Data Units N", fontsize=12)
+    ax.set_ylabel("Global Parity Units R", fontsize=12)
+    ax.set_xlabel("Global Data Units K", fontsize=12)
     ax.invert_yaxis()
 
     # Set axis label settings
@@ -86,8 +76,7 @@ def GenerateHeatmap(data):
     ax.set_yticklabels(y_tick_labels, rotation=0, va='center')
 
     # Set title
-    ax.set_title("Number of Cores to Achieve 600 Gbps for SLEC", fontdict={'fontsize': 16}, y=1.08)
-    # ax.set_title("Number of Cores to Achieve 600 Gbps for MLEC (X+Y)/(5+1)", fontdict={'fontsize': 16}, y=1.08)
+    ax.set_title("Number of Cores to Achieve 600 Gbps for LRC (X, 2, Y)", fontdict={'fontsize': 16}, y=1.08)
 
     # Set boundary around outside of heatmap
     for _, spine in ax.spines.items():
