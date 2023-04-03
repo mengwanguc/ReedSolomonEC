@@ -6,7 +6,7 @@ import seaborn as sns
 sns.set_theme()
 
 MAX_N = 50
-MAX_K = 10
+MAX_K = 15
 INPUT_PATH = "slec.dat"
 
 def GetLines():
