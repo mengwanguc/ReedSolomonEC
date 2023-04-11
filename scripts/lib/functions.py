@@ -23,7 +23,7 @@ def RunBenchmarkSLEC(n, k):
         n   data chunks
         k   parity chunks
     """
-    os.system(f"./run_benchmark.sh -n {n} -k {k} -c {const.CHUNKSIZE} -m {const.MODE} -e {const.DEC_SLEC} -f {const.THROUGHPUT_FILE}")
+    os.system(f"./run_benchmark.sh -n {n} -k {k} -c {const.CHUNKSIZE} -m {const.MODE} -e {const.SLEC} -f {const.THROUGHPUT_FILE}")
 
 
 def RunBenchmarkMLEC(net_n, net_k, loc_n, loc_k):

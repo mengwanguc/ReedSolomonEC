@@ -2,7 +2,7 @@ from PIL import Image
 
 TARGET_BOUNDS = (1024, 1024)
 
-IMAGE_PATH = "F/cores_LRC/figure.eps"
+IMAGE_PATH = "F/tp_SLEC/figure.eps"
 
 # Load the EPS at 10 times whatever size Pillow thinks it should be
 # (Experimentaton suggests that scale=1 means 72 DPI but that would

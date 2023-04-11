@@ -43,21 +43,17 @@ MODE = ISA_L
 THROUGHPUT_FILE = "throughput.log"
 
 # Output file path for data generation.
-# OUTPUT_PATH = "data/isa-l_encode_slec.csv"
+OUTPUT_PATH = "data/isa-l_encode_slec.csv"
 # OUTPUT_PATH = "data/isa-l_encode_mlec_serial.csv"
-OUTPUT_PATH = "data/isa-l_encode_lrc.csv"
+# OUTPUT_PATH = "data/isa-l_encode_lrc.csv"
 
 # Input file path for data usage.
-# INPUT_PATH = "data/isa-l_encode_slec.csv"
+INPUT_PATH = "data/isa-l_encode_slec.csv"
 # INPUT_PATH = "data/isa-l_encode_mlec_serial.csv"
-INPUT_PATH = "data/isa-l_encode_lrc.csv"
+# INPUT_PATH = "data/isa-l_encode_lrc.csv"
 
 # Output image for heatmap.
-# HEATMAP_PATH = "figures/SLEC_encoding.png"
-# HEATMAP_PATH = "figures/Num_Cores_SLEC.png"
-# HEATMAP_PATH = "figures/Num_Cores_5+1_loc_MLEC.png"
-# HEATMAP_PATH = "figures/MLEC_serial_5+1_loc_encoding.png"
-HEATMAP_PATH = "figures/Num_Cores_LRC.png"
+# HEATMAP_PATH = "figures/Num_Cores_LRC.png"
 # HEATMAP_PATH = "figures/Num_Cores_LRC.png"
 
 # Input file path to read durability data from.
@@ -69,7 +65,7 @@ DURABILITY_DATA = "data/durability.csv"
 MAX_N = 50
 
 # Maximum value for parity chunks.
-MAX_K = 10
+MAX_K = 15
 
 # ------------------------------ MLEC Constants ------------------------------ #
 
