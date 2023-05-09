@@ -4,11 +4,11 @@ The purpose of this repository is to provide a code base with a wide repertoire 
 
 Much of the underlying erasure coding is performed by the ISA-L and Java Reed Solomon libraries, which are kept as submodules in this repository.
 
+However, these submodules have been modified to allow increased erasure coding capabilities, such as multi-level erasure coding (MLEC) and locally-reparable codes (LRC).
+
 The `JavaReedSolomon` submodule is based on the [Backblaze Java Reed-Solomon repository](https://github.com/Backblaze/JavaReedSolomon) and the `isa-l` submodule is based on the [Intel ISA-L repository](https://github.com/intel/isa-l).
 
-There are a series of Python scripts that give useful erasure coding data collection (mostly throughput) and analysis.
-
-Furthermore, there are modifications to the ISA-L and Java Reed Solomon code bases to give MLEC and LRC erasure coding capabilities.
+This repository also contains a series of Python scripts that give useful erasure coding data collection (mostly throughput) and analysis.
 
 
 ## Setting up Submodules
