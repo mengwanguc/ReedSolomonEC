@@ -2,7 +2,7 @@ import os
 import sys
 import re
 from config import constants as const
-from config.constants import ISA_L, JAVA_RS, SLEC, MLEC
+from config.constants import ISA_L, JAVA_RS, SLEC, MLEC, MLEC_SPLIT, DEC_SLEC
 
 
 def Recalibrate():
@@ -23,7 +23,7 @@ def RunBenchmarkSLEC(n, k):
         n   data chunks
         k   parity chunks
     """
-    os.system(f"./run_benchmark.sh -n {n} -k {k} -c {const.CHUNKSIZE} -m {const.MODE} -e {const.DEC_SLEC} -f {const.THROUGHPUT_FILE}")
+    os.system(f"./run_benchmark.sh -n {n} -k {k} -c {const.CHUNKSIZE} -m {const.MODE} -e {SLEC} -f {const.THROUGHPUT_FILE}")
 
 
 def RunBenchmarkMLEC(net_n, net_k, loc_n, loc_k):
@@ -34,6 +34,7 @@ def RunBenchmarkMLEC(net_n, net_k, loc_n, loc_k):
         loc_n   local data chunks
         loc_k   local parity chunks
     """
+    # NOTE: Change -e {MLEC} to -e {MLEC_SPLIT} if running in parallel
     os.system(f"./run_benchmark.sh -a {net_n} -b {net_k} -n {loc_n} -k {loc_k} -c {const.CHUNKSIZE} -m {const.MODE} -e {MLEC} -f {const.THROUGHPUT_FILE}")
 
 
