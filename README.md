@@ -83,7 +83,7 @@ This repository also contains a series of Python scripts that give useful erasur
 - For example:
     - The file `isa-l_decode_slec.csv` is a list of decoding throughput measurements of many different SLEC configurations using the ISA-L library.
     - The file `javars_encode_lrc.csv` is a list of encoding throughput measurements of many different LRC configurations using the JavaRS library.
-- These files are usually generated via [multiple value data generation](#end-to-end-multiple-value-data-generation).
+- These files are usually generated via [multiple value data generation](#multiple-value-data-generation).
 - These files can be used in scripts for data processing and graph generation.
 
 ## Data Generation
