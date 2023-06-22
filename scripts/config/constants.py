@@ -61,7 +61,7 @@ DURABILITY_DATA = "data/durability.csv"
 MAX_N = 50
 
 # Maximum value for parity chunks.
-MAX_K = 10
+MAX_K = 15
 
 # ------------------------------ MLEC Constants ------------------------------ #
 

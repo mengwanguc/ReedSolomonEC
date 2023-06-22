@@ -26,13 +26,13 @@ def GenerateData():
             if config_exists:
                 continue
 
-            # Check if LRC configuration is convertible.
-            if not func.Convertible(k, l, r):
-                print(f"Configuration ({k}, {l}, {r}, {p}) is not convertible\n")
-                with open(const.OUTPUT_PATH, "a+") as f:
-                    f.seek(0, 2)
-                    f.write(f"{k},{l},{r},{p},{np.nan}\n")
-                continue
+            # # Check if LRC configuration is convertible.
+            # if not func.Convertible(k, l, r):
+            #     print(f"Configuration ({k}, {l}, {r}, {p}) is not convertible\n")
+            #     with open(const.OUTPUT_PATH, "a+") as f:
+            #         f.seek(0, 2)
+            #         f.write(f"{k},{l},{r},{p},{np.nan}\n")
+            #     continue
 
             start_time = time.time()
 
