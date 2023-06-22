@@ -25,8 +25,9 @@ MLEC_DURABILITY = "data/mlec_durability.csv"
 # Erasure coding type enumerations
 SLEC = 0
 MLEC = 1
-LRC = 2
-DEC_SLEC = 3
+MLEC_SPLIT = 2
+LRC = 3
+DEC_SLEC = 4
 
 # Erasure coding tool enumerations
 ISA_L = 0
@@ -43,18 +44,13 @@ MODE = ISA_L
 THROUGHPUT_FILE = "throughput.log"
 
 # Output file path for data generation.
-OUTPUT_PATH = "data/isa-l_encode_slec.csv"
-# OUTPUT_PATH = "data/isa-l_encode_mlec_serial.csv"
-# OUTPUT_PATH = "data/isa-l_encode_lrc.csv"
+OUTPUT_PATH = "data/test.csv"
 
 # Input file path for data usage.
-INPUT_PATH = "data/isa-l_encode_slec.csv"
-# INPUT_PATH = "data/isa-l_encode_mlec_serial.csv"
-# INPUT_PATH = "data/isa-l_encode_lrc.csv"
+INPUT_PATH = "data/test.csv"
 
 # Output image for heatmap.
-# HEATMAP_PATH = "figures/Num_Cores_LRC.png"
-# HEATMAP_PATH = "figures/Num_Cores_LRC.png"
+HEATMAP_PATH = "figures/SLEC_encoding.png"
 
 # Input file path to read durability data from.
 DURABILITY_DATA = "data/durability.csv"

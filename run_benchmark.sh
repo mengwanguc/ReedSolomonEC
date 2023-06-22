@@ -5,8 +5,9 @@ export ISA_L=0
 export JAVA_RS=1
 export SLEC=0
 export MLEC=1
-export LRC=2
-export DEC_SLEC=3
+export MLEC_SPLIT=2
+export LRC=3
+export DEC_SLEC=4
 
 arguments=""
 
@@ -38,6 +39,10 @@ then
     then
         echo "Running ISA-L Serial MLEC Encoding Process"
         ./isa-l/erasure_code/erasure_code_perf_mlec $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
+    elif [ "$ec" = "$MLEC_SPLIT" ];
+    then
+        echo "Running ISA-L Parallel MLEC Encoding Process"
+        ./isa-l/erasure_code/erasure_code_perf_mlec_split $net_data $net_parity $loc_data $loc_parity $chunksize > $filename
     elif [ "$ec" = "$LRC" ];
     then
         echo "Running ISA-L LRC Encoding Process"
