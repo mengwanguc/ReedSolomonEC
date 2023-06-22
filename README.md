@@ -10,6 +10,9 @@ The `JavaReedSolomon` submodule is based on the [Backblaze Java Reed-Solomon rep
 
 This repository also contains a series of Python scripts that give useful erasure coding data collection (mostly throughput) and analysis.
 
+### MLEC Paper Artifact:
+
+- The specific script used to generate figure 11 in the "Design Considerations and Analysis of Multi-Level Erasure Coding in Large-Scale Data Centers" paper is the `heatmap.py` script, with details included [here](#available-scripts).
 
 ## Erasure Coding Methodology
 
@@ -55,24 +58,28 @@ This repository also contains a series of Python scripts that give useful erasur
     $  make
     $  sudo make install
     ```
+- After that has been done, run the following command:
+    ```
+    $  make perfs
+    ```
 
 ## Configuration
 
-- Inside the `scripts/config` directory there is a configuration file called `constants.py`.
+- Inside the `scripts/config/` directory within the main repository there is a configuration file called `constants.py`.
 - This file contains all of the configurable variables required for the Python scripts.
 - These variables must be configured correctly according to the requirements of the specific Python script before running the script.
 
 ### Common Configurations to Change
 
-- `MODE`
-- `OUTPUT_PATH`
-- `INPUT_PATH`
+- `MODE` (ISA-L or JavaRS)
+- `OUTPUT_PATH` (output file path)
+- `INPUT_PATH` (input file path)
 - `MAX_VALUES` (different for each erasure coding type)
-- `CHUNKSIZE`
+- `CHUNKSIZE` (chunk size in MB)
 
 ## Datasets
 
-- Dataset files are in the `data` folder.
+- Dataset files are in the `data/` directory.
 - For example:
     - The file `isa-l_decode_slec.csv` is a list of decoding throughput measurements of many different SLEC configurations using the ISA-L library.
     - The file `javars_encode_lrc.csv` is a list of encoding throughput measurements of many different LRC configurations using the JavaRS library.
@@ -111,7 +118,7 @@ This repository also contains a series of Python scripts that give useful erasur
     - `OUTPUT_PATH = "data/<desired_filename>.csv"`
     - `MAX_N = 50` (for configurations with number of data chunks from 1 to 50)
     - `MAX_K = 10` (for configurations with number of parity chunks from 1 to 10)
-2. In the terminal, change the current working directory to the `scripts` directory using the following command:
+2. In the terminal, change the current working directory to the `scripts/` directory using the following command:
     ```
     $  cd scripts/
     ```
@@ -119,16 +126,24 @@ This repository also contains a series of Python scripts that give useful erasur
     ```
     $  python3 gen_slec.py
     ```
-- NOTE: To generate SLEC decoding throughput data or MLEC throughput data in split mode, follow [these instructions](#extraneous-settings-for-certain-erasure-coding-methods) first.
+4. The terminal output will display information regarding the data collection process.
+5. Upon completion of the script's execution, the file `<desired_filename>.csv` within the `data/` directory will have the records of each collected measurement.
+- If generating throughput data of other erasure coding types, simply run the corresponding script with the appropriate configuration settings.
+    - For instance, if MLEC or LRC encoding throughput data is required, some configuration settings that must be set are:
+        - `MAX_NET_N`, `MAX_NET_K`, `MAX_LOC_N`, and `MAX_LOC_K` for MLEC
+        - `LRC_OPT`, `MAX_LRC_K`, `MAX_LRC_L`, `MAX_LRC_R`, and `MAX_LRC_P` for LRC
+    - NOTE: To generate SLEC decoding throughput data or MLEC throughput data in split mode, follow [these instructions](#extraneous-settings-for-certain-erasure-coding-methods) first.
 
 ## Available Scripts
 
+- All available Python scripts are contained within the `scripts/` directory
 - `gen_slec.py`:
   - Generates SLEC throughput according to the `MAX_VALUE` constants specified in the configuration file.
 - `gen_lrc.py`:
   - Generates LRC throughput according to the `MAX_VALUE` constants specified in the configuration file.
 - `heatmap.py`:
-  - Generates a heatmap of throughput performance for MLEC.
+  - Generates a heatmap of throughput performance for SLEC, MLEC, and .
+  - This script uses experiment results in file ???.log to reproduce Figure 11 "Encoding throughput for various (k+p)" in the MLEC paper.
 - `compare_tools.py`:
   - Compares the throughput performance of the ISA-L erasure coding tool to that of the Java Reed-Solomon erasure coding tool.
   - Works with different erasure coding types.
@@ -147,7 +162,7 @@ This repository also contains a series of Python scripts that give useful erasur
 
 ### Shared Functions
 
-- Inside the `scripts/lib` directory there is a file called `functions.py` that contains shared functions that are used by multiple Python scripts.
+- Inside the `scripts/lib/` directory there is a file called `functions.py` that contains shared functions that are used by multiple Python scripts.
 - Can be helpful when writing a new script.
 - Modify where necessary according to needs.
 
