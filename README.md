@@ -10,10 +10,6 @@ The `JavaReedSolomon` submodule is based on the [Backblaze Java Reed-Solomon rep
 
 This repository also contains a series of Python scripts that give useful erasure coding data collection (mostly throughput) and analysis.
 
-### MLEC Paper Artifact:
-
-- The specific script used to generate figure 11 in the "Design Considerations and Analysis of Multi-Level Erasure Coding in Large-Scale Data Centers" paper is the `heatmap.py` script, with details included [here](#available-scripts).
-
 ## Erasure Coding Methodology
 
 ### Single-Level Erasure Coding
@@ -39,18 +35,18 @@ This repository also contains a series of Python scripts that give useful erasur
 ## Setting up Submodules
 
 - To properly clone the repository with its submodules, run the following command:
-    ```
+    ```shell
     $  git clone --recurse-submodules -j8 https://github.com/rajrana22/ReedSolomonEC.git
     ```
     -  -j8 is an optional performance optimization
 - After this is complete, open the ISA-L submodule with the following terminal command:
-    ```
+    ```shell
     $  cd ReedSolomonEC/isa-l/
     ```
 - From there, follow the instructions in the README on how to install the appropriate tools and build the ISA-L library.
 - For most users (specifically on a Linux-based OS), this should be as simple as the following terminal commands:
 
-    ```
+    ```shell
     $  sudo apt update
     $  sudo apt install gcc g++ make nasm autoconf libtool
     $  ./autogen.sh
@@ -59,7 +55,7 @@ This repository also contains a series of Python scripts that give useful erasur
     $  sudo make install
     ```
 - After that has been done, run the following command:
-    ```
+    ```shell
     $  make perfs
     ```
 
@@ -86,26 +82,78 @@ This repository also contains a series of Python scripts that give useful erasur
 - These files are usually generated via [multiple value data generation](#multiple-value-data-generation).
 - These files can be used in scripts for data processing and graph generation.
 
+## MLEC Paper Artifact
+
+- This section outlines the steps required to reproduce figure 11 "Encoding throughput for various (k+p)" in the "Design Considerations and Analysis of Multi-Level Erasure Coding in Large-Scale Data Centers" paper.
+- The `heatmap.py` script uses experiment results from file `data/isa-l_encode_slec.csv` to generate figure 11.
+    - To reproduce the data values in the dataset, follow [these instructions](#multiple-value-data-generation).
+- The directory `paper-figures/` contains sub-directories which each store:
+    - `<EC_data>.dat` data file that contains the collected data.
+    - `plt.py` Python script that plots the appropriate figure given the data file.
+    - `figure.eps` vector file that contains the figure image which is outputted by the Python script.
+- In the following steps, you will see how to reconstruct the `paper-figures/tp_SLEC/` sub-directory, which contains all the files necessary for producing figure 11 from the paper.
+1. Make sure that [the steps](#setting-up-submodules) to properly set up the submodules have been completed.
+2. Create a subdirectory within the `paper-figures` directory using the following shell command:
+    ```shell
+    mkdir paper-figures/<dir_name>/
+    ```
+3. Open the `scripts/mod_data.py` Python script and change line 3 and line 4 as such:
+    ```Python
+    INPUT_PATH = "../data/isa-l_encode_slec.csv"
+    OUTPUT_PATH = "../paper-figures/<dir_name>/slec.dat"
+    ```
+4. Within the `scripts/` directory, execute the `mod_data.py` script using the following shell commands:
+    ```shell
+    cd scripts/
+    python3 mod_data.py
+    cd ..
+    ```
+5. Enter the `paper-figures/` directory and copy the figure generator Python script from the `tp_SLEC/` subdirectory into your created subdirectory using the following shell commands:
+    ```shell
+    cd paper-figures/
+    cp tp_SLEC/plt.py <dir_name>/
+    ```
+6. Remaining inside the `paper-figures/` directory, execute the figure generator Python script within your created subdirectory using the following shell commands:
+    ```shell
+    cd <dir_name>
+    python3 plt.py
+    ```
+7. The figure has now been regenerated in the form of an `.eps` vector file. If you would like to view it as a `.png` image file, you can continue to step 8.
+8. Exit the `paper-figures/` directory and open the `scripts/convert_image.py` Python script and change line 5 and line 7 as such:
+    ```shell
+    cd ../..
+    cd scripts/
+    ```
+    ```Python
+    IMAGE_PATH = "../paper-figures/<dir_name>/figure.eps"
+    IMAGE_OUT = "../figures/<img_name>.png"
+    ```
+9. Execute the `convert_image.py` Python script using the following shell commands:
+    ```shell
+    python3 convert_image.py
+    ```
+10. The figure 11 image should then be present in the `figures/` directory for viewing.
+
 ## Data Generation
 
 ### Single Value Data Generation
 
 - Consider the SLEC throughput for a specific configuration of `n` data chunks and `k` parity chunks with a chunk size of `chunksize` MB.
 - The following command will measure the encoding throughput for such a configuration using a modified version of the ISA-L library:
-    ```
+    ```shell
     $  ./isa-l/erasure_code/erasure_code_perf_from_file n k chunksize
     ```
 - Similarly, the following command will measure the encoding throughput for such a configuration using a modified version of the JavaRS library:
-    ```
+    ```shell
     $  ./gradlew -PmainClass=com.backblaze.erasure.ReedSolomonBenchmarkSLEC run n k chunksize
     ```
 - Now consider the MLEC throughput for a specific configuration of `net_n` network-level data chunks, `net_k` network-level parity chunks, `loc_n` local-level data chunks, and `loc_k` local-level parity chunks, with a chunk size of `chunksize` MB.
 - The following command will measure the encoding throughput for such a configuration in parallel on a modified version of the ISA-L library:
-    ```
+    ```shell
     $  ./isa-l/erasure_code/erasure_code_perf_mlec net_n net_k loc_n loc_k chunksize
     ```
 - The following command will measure the encoding throughput for such a configuration serially on a modified version of the ISA-L library:
-    ```
+    ```shell
     $  ./isa-l/erasure_code/erasure_code_perf_mlec_split net_n net_k loc_n loc_k chunksize
     ```
 
@@ -119,11 +167,11 @@ This repository also contains a series of Python scripts that give useful erasur
     - `MAX_N = 50` (for configurations with number of data chunks from 1 to 50)
     - `MAX_K = 10` (for configurations with number of parity chunks from 1 to 10)
 2. In the terminal, change the current working directory to the `scripts/` directory using the following command:
-    ```
+    ```shell
     $  cd scripts/
     ```
 3. In the terminal, run the following command:
-    ```
+    ```shell
     $  python3 gen_slec.py
     ```
 4. The terminal output will display information regarding the data collection process.
@@ -139,20 +187,34 @@ This repository also contains a series of Python scripts that give useful erasur
 - All available Python scripts are contained within the `scripts/` directory
 - `gen_slec.py`:
   - Generates SLEC throughput according to the `MAX_VALUE` constants specified in the configuration file.
+- `gen_mlec.py`:
+  - Generates MLEC throughput according to the `MAX_VALUE` constants specified in the configuration file.
 - `gen_lrc.py`:
   - Generates LRC throughput according to the `MAX_VALUE` constants specified in the configuration file.
 - `heatmap.py`:
-  - Generates a heatmap of throughput performance for SLEC, MLEC, and .
-  - This script uses experiment results in file ???.log to reproduce Figure 11 "Encoding throughput for various (k+p)" in the MLEC paper.
+  - Generates a heatmap of SLEC or MLEC throughput performance.
+- `cores_heatmap.py`:
+  - Generates a heatmap of the number of cores required to achieve 600 Gbps throughput performance for SLEC or MLEC.
+- `lrc_heatmap.py`:
+  - Generates a heatmap of LRC throughput performance.
+- `lrc_cores_heatmap.py`:
+  - Generates a heatmap of the number of cores required to achieve 600 Gbps throughput performance for LRC.
+- `convert_image.py`:
+  - Simple script that converts an EPS image to a PNG image for easier viewing.
+  - `IMAGE_PATH` variable in script defines input EPS image path.
+  - `IMAGE_OUT` variable in script defines output PNG image path.
+- `mod_data.py`:
+  - Simple script that converts a CSV file to a DAT file.
+  - `INPUT_PATH` variable in script defines input CSV file path.
+  - `OUTPUT_PATH` variable in script defines output DAT file path.
+- `cache_test.py`:
+  - Test script for measuring and summarizing cache and throughput performance.
 - `compare_tools.py`:
   - Compares the throughput performance of the ISA-L erasure coding tool to that of the Java Reed-Solomon erasure coding tool.
   - Works with different erasure coding types.
-- `cache_test.py`:
-  - Test script for measuring and summarizing cache and throughput performance.
 - `reconstruct_figure.py`:
   - Reconstructs figure 1 from the ECWide paper.
   - Requires the correct throughput input.
-
 
 ## Back-End Files
 
