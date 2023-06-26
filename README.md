@@ -71,7 +71,7 @@ This repository also contains a series of Python scripts that give useful erasur
 - `OUTPUT_PATH` (output file path)
 - `INPUT_PATH` (input file path)
 - `MAX_VALUES` (different for each erasure coding type)
-- `CHUNKSIZE` (chunk size in MB)
+- `CHUNKSIZE` (chunk size in KB)
 
 ## Datasets
 
