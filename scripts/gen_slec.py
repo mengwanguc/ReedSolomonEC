@@ -41,7 +41,7 @@ def GenerateData():
 
 
 def main():
-    func.Recalibrate()
+    # func.Recalibrate()
     GenerateData()
 
 
